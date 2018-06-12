@@ -1,6 +1,5 @@
 const readlineSync = require('readline-sync');
 
-// Main Menu
 const mainMenu = () => {
   let answers = ['Create Character', 'Load Character', 'Quit Game'];
   let index = readlineSync.keyInSelect(answers, '');
@@ -23,13 +22,26 @@ const chooseRace = (charSheet) => {
     charSheet.attributes.Wis += 1;
     charSheet.attributes.Cha += 1;
   } else if (index === 1) {
-    // stb.
+    charSheet.attributes.Dex += 2;
+  } else if (index === 2) {
+    charSheet.attributes.Con += 2;
+  } else if (index === 3) {
+    charSheet.attributes.Str += 2;
   }
   return charSheet;
+};
+
+const modifierCalculator = (character) => {
+  let stats = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'];
+  let statsMOD = ['StrMOD', 'DexMOD', 'ConMOD', 'IntMOD', 'WisMOD', 'ChaMOD'];
+  for (let i = 0; i < stats.length; i++) {
+    character.modifiers[statsMOD[i]] = character.attributes[stats[i]] > 10 ? Math.floor((character.attributes[stats[i]] - 10) / 2) : Math.ceil((character.attributes[stats[i]] - 10) / 2);
+  }
 };
 
 module.exports = {
   mainMenu,
   newCharacter,
-  chooseRace
+  chooseRace,
+  modifierCalculator
 };

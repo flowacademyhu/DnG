@@ -1,37 +1,19 @@
-const functions = require('./functions');
+const functions = require('./functions/functions');
 const constants = require('./constants');
+const design = require('./design');
 const clear = require('console-clear');
 
 while (true) {
   // Main Screen
   clear();
-  console.log('▄▀▀█▄▄   ▄▀▀▄ ▄▀▀▄  ▄▀▀▄ ▀▄  ▄▀▀▀▀▄   ▄▀▀█▄▄▄▄  ▄▀▀▀▀▄   ▄▀▀▄ ▀▄  ▄▀▀▀▀▄            ');
-  console.log('█ ▄▀   █ █   █    █ █  █ █ █ █        ▐  ▄▀   ▐ █      █ █  █ █ █ █ █   ▐            ');
-  console.log('▐ █    █ ▐  █    █  ▐  █  ▀█ █    ▀▄▄   █▄▄▄▄▄  █      █ ▐  █  ▀█    ▀▄              ');
-  console.log('  █    █   █    █     █   █  █     █ █  █    ▌  ▀▄    ▄▀   █   █  ▀▄   █             ');
-  console.log(' ▄▀▄▄▄▄▀    ▀▄▄▄▄▀  ▄▀   █   ▐▀▄▄▄▄▀ ▐ ▄▀▄▄▄▄     ▀▀▀▀   ▄▀   █    █▀▀▀              ');
-  console.log('█     ▐             █    ▐   ▐         █    ▐            █    ▐    ▐                 ');
-  console.log(' ▐                   ▐                  ▐                 ▐                           ');
-  console.log('                         ▄▀▀█▄   ▄▀▀▄ ▀▄  ▄▀▀█▄▄                                     ');
-  console.log('                        ▐ ▄▀ ▀▄ █  █ █ █ █ ▄▀   █                                    ');
-  console.log('                          █▄▄▄█ ▐  █  ▀█ ▐ █    █                                    ');
-  console.log('                         ▄▀   █   █   █    █    █                                    ');
-  console.log('                        █   ▄▀  ▄▀   █    ▄▀▄▄▄▄▀                                    ');
-  console.log('                         ▐   ▐   █    ▐   █     ▐                                     ');
-  console.log('                               ▐        ▐                                           ');
-  console.log('▄▀▀▀▀▄   ▄▀▀▀▀▄      ▄▀▀█▄   ▄▀▀█▄▄   ▄▀▀█▀▄    ▄▀▀█▄   ▄▀▀▀█▀▀▄  ▄▀▀▀▀▄   ▄▀▀▄▀▀▀▄  ▄▀▀▀▀▄ ');
-  console.log('█        █    █      ▐ ▄▀ ▀▄ █ ▄▀   █ █   █  █  ▐ ▄▀ ▀▄ █    █  ▐ █      █ █   █   █ █ █   ▐ ');
-  console.log('█    ▀▄▄ ▐    █        █▄▄▄█ ▐ █    █ ▐   █  ▐    █▄▄▄█ ▐   █     █      █ ▐  █▀▀█▀     ▀▄   ');
-  console.log('█     █ █    █        ▄▀   █   █    █     █      ▄▀   █    █      ▀▄    ▄▀  ▄▀    █  ▀▄   █  ');
-  console.log('▐▀▄▄▄▄▀ ▐  ▄▀▄▄▄▄▄▄▀ █   ▄▀   ▄▀▄▄▄▄▀  ▄▀▀▀▀▀▄  █   ▄▀   ▄▀         ▀▀▀▀   █     █    █▀▀▀   ');
-  console.log('▐          █         ▐   ▐   █     ▐  █       █ ▐   ▐   █                  ▐     ▐    ▐      ');
-  console.log('   ▐                 ▐        ▐       ▐         ▐                                    ');
-
+  design.logo();
   let mainMenuIndex = functions.mainMenu();
-
   if (mainMenuIndex === 0) {
+    clear();
+    design.logo();
     let charSheet = functions.newCharacter(constants.blankCharacter);
     charSheet = functions.chooseRace(charSheet);
+    functions.modifierCalculator(charSheet);
     console.log(charSheet);
     break;
   } else if (mainMenuIndex === 1) {

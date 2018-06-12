@@ -7,6 +7,14 @@ const blankCharacter = {
     Int: 0,
     Wis: 0,
     Cha: 0
+  },
+  modifiers: {
+    StrMOD: 0,
+    DexMOD: 0,
+    ConMOD: 0,
+    IntMOD: 0,
+    WisMOD: 0,
+    ChaMOD: 0
   }
 };
 
