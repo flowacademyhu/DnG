@@ -7,8 +7,14 @@ const blankCharacter = {
     Int: 0,
     Wis: 0,
     Cha: 0
-  }
+  },
+  modifiers: {
+    StrMOD: this.attributes.Str
+  },
+
 };
+
+console.log(blankCharacter.modifiers.Str);
 
 module.exports = {
   blankCharacter

@@ -28,6 +28,10 @@ const chooseRace = (charSheet) => {
   return charSheet;
 };
 
+const calculateModifiers = (stat) => {
+  
+};
+
 module.exports = {
   mainMenu,
   newCharacter,
