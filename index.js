@@ -1,5 +1,4 @@
 const functions = require('./functions/functions');
-const constants = require('./constants');
 const design = require('./design');
 const clear = require('console-clear');
 
@@ -8,16 +7,15 @@ while (true) {
   clear();
   design.logo();
   let mainMenuIndex = functions.mainMenu();
+
   if (mainMenuIndex === 0) {
-    clear();
-    design.logo();
-    let charSheet = functions.newCharacter(constants.blankCharacter);
-    charSheet = functions.chooseRace(charSheet);
-    functions.modifierCalculator(charSheet);
+    let charSheet = functions.createCharacter();
     console.log(charSheet);
     break;
   } else if (mainMenuIndex === 1) {
-    console.log('Load');
+    let charSheet = functions.loadChars();
+    console.log(charSheet);
+    break;
   } else if (mainMenuIndex === 2) {
     console.log('Quit');
     break;

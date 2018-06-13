@@ -1,5 +1,6 @@
 const blankCharacter = {
   name: ' ',
+  race: ' ',
   attributes: {
     Str: 0,
     Dex: 0,
