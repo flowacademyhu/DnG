@@ -9,17 +9,16 @@ while (true) {
   let mainMenuIndex = functions.mainMenu();
 
   if (mainMenuIndex === 0) {
-    while (true) {
-      let charSheet = functions.createCharacter();
-      console.log(charSheet);
-      break;
-    }
+    let charSheet = functions.createCharacter();
+    design.sheetDesign(charSheet);
+    break;
   } else if (mainMenuIndex === 1) {
     let charSheet = functions.loadChars();
-    console.log(charSheet);
+    design.sheetDesign(charSheet);
     break;
   } else if (mainMenuIndex === 2) {
-    console.log('Quit');
+    clear();
+    console.log('Goodbye!');
     break;
   }
 }

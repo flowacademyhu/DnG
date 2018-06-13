@@ -24,9 +24,10 @@ const createCharacter = () => {
   design.sheetDesign(charSheet);
   charSheet = chooseRace(charSheet);
   charSheet = chooseAttributes(charSheet);
+  calculateHP(charSheet);
+  calculateInit(charSheet);
 
   saveChars(charSheet);
-
   return charSheet;
 };
 
@@ -91,6 +92,16 @@ const chooseAttributes = (charSheet) => {
     modifierCalculator(charSheet);
   }
   return charSheet;
+};
+
+const calculateHP = (charSheet) => {
+  charSheet.HP += (6 + charSheet.modifiers.ConMOD);
+  charSheet.tempHP = charSheet.HP;
+};
+
+const calculateInit = (charSheet) => {
+  charSheet.init = charSheet.modifiers.DexMOD;
+  charSheet.tempHP = charSheet.HP;
 };
 
 const modifierCalculator = (character) => {
