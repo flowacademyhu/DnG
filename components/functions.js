@@ -1,10 +1,14 @@
 const readlineSync = require('readline-sync');
-const dice = require('./dice');
-const design = require('./design');
-const constants = require('./constants');
 const clear = require('console-clear');
 const fs = require('fs');
 const clone = require('clone');
+
+const dice = require('./dice');
+const design = require('./design');
+const constants = require('./constants');
+const items = require('./items');
+
+// MAIN MENU FUNCTIONS
 
 const mainMenu = () => {
   let answers = ['Create Character', 'Load Character', 'Quit Game'];
@@ -12,6 +16,8 @@ const mainMenu = () => {
 
   return index;
 };
+
+// CHARACTER CREATION / SAVE / LOAD
 
 const createCharacter = () => {
   let charSheet = clone(constants.blankCharacter);
@@ -29,21 +35,6 @@ const createCharacter = () => {
 
   saveChars(charSheet);
   return charSheet;
-};
-
-const saveChars = (charSheet) => {
-  fs.writeFileSync(`saved/${charSheet.name}.json`, JSON.stringify(charSheet));
-};
-
-const loadChars = () => {
-  const savedFolder = './saved/';
-  let files = [];
-  fs.readdirSync(savedFolder).forEach(file => {
-    files.push(file);
-  });
-  let index = readlineSync.keyInSelect(files, 'Load Character by Name: ');
-  let loadedSheet = fs.readFileSync(`./saved/${files[index]}`);
-  return JSON.parse(loadedSheet);
 };
 
 const chooseName = (charSheet) => {
@@ -112,9 +103,76 @@ const modifierCalculator = (character) => {
   }
 };
 
+const saveChars = (charSheet) => {
+  fs.writeFileSync(`saved/${charSheet.name}.json`, JSON.stringify(charSheet));
+};
+
+const loadChars = () => {
+  const savedFolder = './saved/';
+  let files = [];
+  fs.readdirSync(savedFolder).forEach(file => {
+    files.push(file);
+  });
+  let index = readlineSync.keyInSelect(files, 'Load Character by Name: ');
+  let loadedSheet = fs.readFileSync(`./saved/${files[index]}`);
+  return JSON.parse(loadedSheet);
+};
+
+// CHARACTER MENU
+
+const characterMenu = (charSheet) => {
+  while (true) {
+    clear();
+    design.sheetDesign(charSheet);
+    let answers = ['Arena', 'Shop', 'Exit'];
+    let index = readlineSync.keyInSelect(answers, '');
+    if (index === 0) {
+      console.log('Enter Fight');
+    } else if (index === 1) {
+      shop(charSheet);
+    } else if (index === 2) {
+      break;
+    }
+  }
+};
+
+const shop = (charSheet) => {
+  while (true) {
+    let answers = ['Armor', 'Weapon', 'Misc', 'Exit'];
+    let index = readlineSync.keyInSelect(answers, '');
+    if (index === 0) {
+      shopArmor(charSheet);
+    } else if (index === 3) {
+      break;
+    }
+  }
+};
+
+const shopArmor = (charSheet) => {
+  clear();
+  design.sheetDesign(charSheet);
+  let armorList = [];
+  items.armorList.forEach(item => {
+    armorList.push(`${item.name} | ${item.price} gold`);
+  });
+  let indexArmor = readlineSync.keyInSelect(armorList, '');
+
+  if (items.armorList[indexArmor].price > charSheet.gold) {
+    readlineSync.question('Not enough gold! Press enter to continue...');
+  } else {
+    charSheet.gold -= items.armorList[indexArmor].price;
+    charSheet.equipment.backpack.push(items.armorList[indexArmor].ID);
+  }
+};
+
+// EXPORT
+
 module.exports = {
   mainMenu,
   createCharacter,
   modifierCalculator,
-  loadChars
+  loadChars,
+  characterMenu
 };
+
+console.log();

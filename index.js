@@ -10,12 +10,16 @@ while (true) {
 
   if (mainMenuIndex === 0) {
     let charSheet = functions.createCharacter();
-    design.sheetDesign(charSheet);
-    break;
+    while (true) {
+      functions.characterMenu(charSheet);
+      break;
+    }
   } else if (mainMenuIndex === 1) {
     let charSheet = functions.loadChars();
-    design.sheetDesign(charSheet);
-    break;
+    while (true) {
+      functions.characterMenu(charSheet);
+      break;
+    }
   } else if (mainMenuIndex === 2) {
     clear();
     console.log('Goodbye!');
