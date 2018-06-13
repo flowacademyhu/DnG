@@ -1,9 +1,10 @@
 const readlineSync = require('readline-sync');
 const dice = require('./dice');
-const design = require('../design');
-const constants = require('../constants');
+const design = require('./design');
+const constants = require('./constants');
 const clear = require('console-clear');
 const fs = require('fs');
+const clone = require('clone');
 
 const mainMenu = () => {
   let answers = ['Create Character', 'Load Character', 'Quit Game'];
@@ -13,7 +14,7 @@ const mainMenu = () => {
 };
 
 const createCharacter = () => {
-  let charSheet = constants.blankCharacter;
+  let charSheet = clone(constants.blankCharacter);
 
   clear();
   design.sheetDesign(charSheet);
@@ -76,15 +77,17 @@ const chooseRace = (charSheet) => {
 const chooseAttributes = (charSheet) => {
   let generatedAttributeList = dice.genAtr();
   let stats = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'];
+  let stats2 = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma'];
   let index1 = 0;
   let index2 = 0;
   while (generatedAttributeList.length > 0) {
     clear();
     design.sheetDesign(charSheet);
     index1 = readlineSync.keyInSelect(generatedAttributeList, 'Select value to distribute: ');
-    index2 = readlineSync.keyInSelect(stats, 'Add the value to the following attribute: ');
+    index2 = readlineSync.keyInSelect(stats2, 'Add the value to the following attribute: ');
     charSheet.attributes[stats[index2]] += generatedAttributeList.splice(index1, 1)[0];
     stats.splice(index2, 1);
+    stats2.splice(index2, 1);
     modifierCalculator(charSheet);
   }
   return charSheet;

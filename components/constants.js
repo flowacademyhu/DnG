@@ -1,6 +1,12 @@
+const dummy = require('./dummy');
+
 const blankCharacter = {
   name: ' ',
   race: ' ',
+  lvl: 1,
+  exp: 0,
+  HP: 0,
+  tempHP: 0,
   attributes: {
     Str: 0,
     Dex: 0,
@@ -16,8 +22,16 @@ const blankCharacter = {
     IntMOD: 0,
     WisMOD: 0,
     ChaMOD: 0
+  },
+  proficiency: 2,
+  AC: 0,
+  init: 0,
+  equipment: {
+    armor: 'ID002'
   }
 };
+
+// console.log(dummy.armors.filter(item => item.ID === 'ID002'));
 
 module.exports = {
   blankCharacter
