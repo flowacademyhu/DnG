@@ -1,5 +1,5 @@
-const functions = require('./functions/functions');
-const design = require('./design');
+const functions = require('./components/functions');
+const design = require('./components/design');
 const clear = require('console-clear');
 
 while (true) {
@@ -9,9 +9,11 @@ while (true) {
   let mainMenuIndex = functions.mainMenu();
 
   if (mainMenuIndex === 0) {
-    let charSheet = functions.createCharacter();
-    console.log(charSheet);
-    break;
+    while (true) {
+      let charSheet = functions.createCharacter();
+      console.log(charSheet);
+      break;
+    }
   } else if (mainMenuIndex === 1) {
     let charSheet = functions.loadChars();
     console.log(charSheet);
