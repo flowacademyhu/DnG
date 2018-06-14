@@ -3,7 +3,6 @@ const design = require('./components/design');
 const clear = require('console-clear');
 
 while (true) {
-  // Main Screen
   clear();
   design.logo();
   let mainMenuIndex = functions.mainMenu();
@@ -20,7 +19,7 @@ while (true) {
       functions.characterMenu(charSheet);
       break;
     }
-  } else if (mainMenuIndex === 2) {
+  } else if (mainMenuIndex === -1) {
     clear();
     console.log('Goodbye!');
     break;

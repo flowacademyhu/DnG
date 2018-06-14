@@ -11,8 +11,8 @@ const items = require('./items');
 // MAIN MENU FUNCTIONS
 
 const mainMenu = () => {
-  let answers = ['Create Character', 'Load Character', 'Quit Game'];
-  let index = readlineSync.keyInSelect(answers, '');
+  let answers = ['Create Character', 'Load Character'];
+  let index = readlineSync.keyInSelect(answers, '', {cancel: 'Quit Game'});
 
   return index;
 };
@@ -44,7 +44,7 @@ const chooseName = (charSheet) => {
 
 const chooseRace = (charSheet) => {
   let answers = ['Human (+1 To All Stats)', 'Elf (+2 Dexterity)', 'Dwarf (+2 Constitution)', 'Half-Orc (+2 Strength)'];
-  let index = readlineSync.keyInSelect(answers, 'Choose Race: ');
+  let index = readlineSync.keyInSelect(answers, 'Choose Race: ', {cancel: false});
   if (index === 0) {
     charSheet.attributes.Str += 1;
     charSheet.attributes.Dex += 1;
@@ -75,8 +75,8 @@ const chooseAttributes = (charSheet) => {
   while (generatedAttributeList.length > 0) {
     clear();
     design.sheetDesign(charSheet);
-    index1 = readlineSync.keyInSelect(generatedAttributeList, 'Select value to distribute: ');
-    index2 = readlineSync.keyInSelect(stats2, 'Add the value to the following attribute: ');
+    index1 = readlineSync.keyInSelect(generatedAttributeList, 'Select value to distribute: ', {cancel: false});
+    index2 = readlineSync.keyInSelect(stats2, 'Add the value to the following attribute: ', {cancel: false});
     charSheet.attributes[stats[index2]] += generatedAttributeList.splice(index1, 1)[0];
     stats.splice(index2, 1);
     stats2.splice(index2, 1);
@@ -108,12 +108,17 @@ const saveChars = (charSheet) => {
 };
 
 const loadChars = () => {
+  clear();
+  design.logo();
+
   const savedFolder = './saved/';
   let files = [];
   fs.readdirSync(savedFolder).forEach(file => {
     files.push(file);
   });
-  let index = readlineSync.keyInSelect(files, 'Load Character by Name: ');
+
+  let index = readlineSync.keyInSelect(files, 'Load Character by Name: ', {cancel: false});
+
   let loadedSheet = fs.readFileSync(`./saved/${files[index]}`);
   return JSON.parse(loadedSheet);
 };
@@ -124,13 +129,14 @@ const characterMenu = (charSheet) => {
   while (true) {
     clear();
     design.sheetDesign(charSheet);
-    let answers = ['Arena', 'Shop', 'Exit'];
-    let index = readlineSync.keyInSelect(answers, '');
+    let answers = ['Arena', 'Shop', 'Inventory'];
+    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Quit to Main Menu'});
     if (index === 0) {
       console.log('Enter Fight');
     } else if (index === 1) {
       shop(charSheet);
-    } else if (index === 2) {
+    } else if (index === -1) {
+      saveChars(charSheet);
       break;
     }
   }
@@ -138,11 +144,13 @@ const characterMenu = (charSheet) => {
 
 const shop = (charSheet) => {
   while (true) {
-    let answers = ['Armor', 'Weapon', 'Misc', 'Exit'];
-    let index = readlineSync.keyInSelect(answers, '');
+    clear();
+    design.inventoryDesign(charSheet);
+    let answers = ['Armor', 'Weapon', 'Misc'];
+    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Exit from Shop'});
     if (index === 0) {
       shopArmor(charSheet);
-    } else if (index === 3) {
+    } else if (index === -1) {
       break;
     }
   }
@@ -150,18 +158,26 @@ const shop = (charSheet) => {
 
 const shopArmor = (charSheet) => {
   clear();
-  design.sheetDesign(charSheet);
+  design.inventoryDesign(charSheet);
+
   let armorList = [];
   items.armorList.forEach(item => {
-    armorList.push(`${item.name} | ${item.price} gold`);
+    armorList.push(`${item.name} | ${item.AC} AC | ${item.price} gold `);
   });
-  let indexArmor = readlineSync.keyInSelect(armorList, '');
+  let indexArmor = readlineSync.keyInSelect(armorList, '', {cancel: 'Back'});
+
+  if (indexArmor === -1) {
+    return;
+  }
+
+  clear();
+  design.inventoryDesign(charSheet);
 
   if (items.armorList[indexArmor].price > charSheet.gold) {
     readlineSync.question('Not enough gold! Press enter to continue...');
   } else {
     charSheet.gold -= items.armorList[indexArmor].price;
-    charSheet.equipment.backpack.push(items.armorList[indexArmor].ID);
+    charSheet.equipment.backpack.armor.push(items.armorList[indexArmor]);
   }
 };
 

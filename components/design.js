@@ -37,6 +37,7 @@ const sheetDesign = (charSheet) => {
     ['Wisdom (Wis):', charSheet.attributes.Wis, 'Wis Modifier:', charSheet.modifiers.WisMOD, 'Pocket Slot 2:', charSheet.equipment.pockets[1]],
     ['Charisma (Cha):', charSheet.attributes.Cha, 'Cha Modifier:', charSheet.modifiers.ChaMOD, 'Pocket Slot 3:', charSheet.equipment.pockets[2]]
   ];
+
   let config = {
     columns: {
       0: {
@@ -65,10 +66,51 @@ const sheetDesign = (charSheet) => {
       }
     }
   };
+
   console.log(table(designTable, config));
+};
+
+const inventoryDesign = (charSheet) => {
+  let backpackListArmor = backpackArmor(charSheet);
+
+  let designTable = [
+    [`Gold:`, charSheet.gold, ' ', ' ', ' ', ' ', ' ', ''],
+    ['Armor:', charSheet.equipment.armor, ' ', 'Backpack Armors', ' Backpack Weapons', 'Backpack Rings', 'Backpack Amulets', 'Backpack Potions'],
+    ['Weapon:', charSheet.equipment.weapon, ' ', backpackListArmor[0], '', '', '', ''],
+    ['Ring:', charSheet.equipment.ring, ' ', backpackListArmor[1], '', '', '', ''],
+    ['Amulet:', charSheet.equipment.amulet, ' ', backpackListArmor[2], '', '', '', ''],
+    ['Pocket Slot 1:', charSheet.equipment.pockets[0], ' ', backpackListArmor[3], '', '', '', ''],
+    ['Pocket Slot 2:', charSheet.equipment.pockets[1], ' ', backpackListArmor[4], '', '', '', ''],
+    ['Pocket Slot 3:', charSheet.equipment.pockets[2], ' ', backpackListArmor[5], '', '', '', '']
+  ];
+
+  let config = {
+    columns: {
+      0: {
+        width: 20
+      },
+      1: {
+        width: 20
+      },
+      2: {
+        width: 1
+      }
+    }
+  };
+
+  console.log(table(designTable, config));
+};
+
+const backpackArmor = (charSheet) => {
+  let backpackListArmor = [];
+  charSheet.equipment.backpack.armor.forEach(element => {
+    backpackListArmor.push(`${element.name} | ${element.AC} AC`);
+  });
+  return backpackListArmor;
 };
 
 module.exports = {
   logo,
-  sheetDesign
+  sheetDesign,
+  inventoryDesign
 };

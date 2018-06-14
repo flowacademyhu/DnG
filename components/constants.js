@@ -30,7 +30,13 @@ const blankCharacter = {
     pockets: ['', '', ''],
     ring: '',
     amulet: '',
-    backpack: []
+    backpack: {
+      armor: [],
+      weapon: [],
+      pockets: [],
+      ring: [],
+      amulet: []
+    }
   },
   gold: 0
 };
