@@ -42,21 +42,29 @@ const pickMonster = (type, sumCR) => {
 };
 
 // Take random monster from type till CR === Monsters CR; Every monster sould make random vals.
-const populateArena = (sumCR) => {
+const genPop = (sumCR) => {
   let population = [];
   let type = choosePool();
   let popCR = 0;
   let monster;
+  let remCR = sumCR;
+
   for (let i = 0; i < 8; i++) {
-    monster = type.filter(monster => monster.CR < sumCR);
+    monster = type.filter(monster => monster.CR <= remCR);
     population[i] = monster[dice.randomIndex(monster)];
+
+    if (population[i] === undefined) {
+      break;
+    } // Break if there is no more object compliant to criteria.
+
     popCR += population[i].CR;
+    remCR = sumCR - popCR;
+
     if (popCR === sumCR || popCR > sumCR) {
       break;
     }
   }
-  console.log(popCR);
   return population;
 };
 
-console.log('pop:', populateArena(4));
+console.log('pop:', genPop(4));
