@@ -1,3 +1,5 @@
+const dice = require('./dice');
+
 const blankCharacter = {
   name: ' ',
   race: ' ',
@@ -5,6 +7,7 @@ const blankCharacter = {
   exp: 0,
   HP: 4,
   tempHP: 0,
+  ATK: 0,
   attributes: {
     Str: 0,
     Dex: 0,
@@ -25,13 +28,31 @@ const blankCharacter = {
   AC: 0,
   init: 0,
   equipment: {
-    armor: '',
-    weapon: '',
-    pockets: ['', '', ''],
-    ring: '',
-    amulet: '',
+    armor: [
+      {
+        name: 'Rugs',
+        AC: 0,
+        maxDexMod: 5,
+        reqStr: 0,
+        price: 0
+      }
+    ],
+    weapon: [
+      {
+        name: 'Rusty Dagger',
+        dmgDisplay: '1-3',
+        dmg: dice.roll(1, 3),
+        price: 0,
+        type: 'onehanded'
+      },
+    ],
+    shield: [],
+    potion: ['', '', ''],
+    ring: [],
+    amulet: [],
     backpack: {
       armor: [],
+      shield: [],
       weapon: [],
       pockets: [],
       ring: [],

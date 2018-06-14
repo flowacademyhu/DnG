@@ -32,6 +32,8 @@ const createCharacter = () => {
   charSheet = chooseAttributes(charSheet);
   calculateHP(charSheet);
   calculateInit(charSheet);
+  calculateATK(charSheet);
+  calculateAC(charSheet);
 
   saveChars(charSheet);
   return charSheet;
@@ -92,7 +94,14 @@ const calculateHP = (charSheet) => {
 
 const calculateInit = (charSheet) => {
   charSheet.init = charSheet.modifiers.DexMOD;
-  charSheet.tempHP = charSheet.HP;
+};
+
+const calculateATK = (charSheet) => {
+  charSheet.ATK = charSheet.modifiers.DexMOD + charSheet.proficiency;
+};
+
+const calculateAC = (charSheet) => {
+  charSheet.AC = charSheet.modifiers.DexMOD + 10;
 };
 
 const modifierCalculator = (character) => {
@@ -146,10 +155,14 @@ const shop = (charSheet) => {
   while (true) {
     clear();
     design.inventoryDesign(charSheet);
-    let answers = ['Armor', 'Weapon', 'Misc'];
+    let answers = ['Armor', 'Shield', 'Weapon', 'Potion', 'Ring', 'Amulet'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Exit from Shop'});
     if (index === 0) {
       shopArmor(charSheet);
+    } else if (index === 1) {
+      shopShield(charSheet);
+    } else if (index === 2) {
+      shopWeapon(charSheet);
     } else if (index === -1) {
       break;
     }
@@ -162,7 +175,7 @@ const shopArmor = (charSheet) => {
 
   let armorList = [];
   items.armorList.forEach(item => {
-    armorList.push(`${item.name} | ${item.AC} AC | ${item.price} gold `);
+    armorList.push(`${item.name} | ${item.AC} AC | ${item.price} gold | ${item.reqStr} min.Str.`);
   });
   let indexArmor = readlineSync.keyInSelect(armorList, '', {cancel: 'Back'});
 
@@ -178,6 +191,56 @@ const shopArmor = (charSheet) => {
   } else {
     charSheet.gold -= items.armorList[indexArmor].price;
     charSheet.equipment.backpack.armor.push(items.armorList[indexArmor]);
+  }
+};
+
+const shopShield = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let shieldList = [];
+  items.shieldList.forEach(item => {
+    shieldList.push(`${item.name} | ${item.AC} AC | ${item.price} gold`);
+  });
+  let indexShield = readlineSync.keyInSelect(shieldList, '', {cancel: 'Back'});
+
+  if (indexShield === -1) {
+    return;
+  }
+
+  clear();
+  design.inventoryDesign(charSheet);
+
+  if (items.shieldList[indexShield].price > charSheet.gold) {
+    readlineSync.question('Not enough gold! Press enter to continue...');
+  } else {
+    charSheet.gold -= items.shieldList[indexShield].price;
+    charSheet.equipment.backpack.shield.push(items.shieldList[indexShield]);
+  }
+};
+
+const shopWeapon = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let weaponList = [];
+  items.weaponList.forEach(item => {
+    weaponList.push(`${item.name} | ${item.dmgDisplay} dmg | ${item.price} gold `);
+  });
+  let indexWeapon = readlineSync.keyInSelect(weaponList, '', {cancel: 'Back'});
+
+  if (indexWeapon === -1) {
+    return;
+  }
+
+  clear();
+  design.inventoryDesign(charSheet);
+
+  if (items.weaponList[indexWeapon].price > charSheet.gold) {
+    readlineSync.question('Not enough gold! Press enter to continue...');
+  } else {
+    charSheet.gold -= items.weaponList[indexWeapon].price;
+    charSheet.equipment.backpack.weapon.push(items.weaponList[indexWeapon]);
   }
 };
 

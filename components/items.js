@@ -1,170 +1,203 @@
 const dice = require('./dice.js');
 
-const slotType = {
-  oneHandedWeapon: {
-    armor: false,
-    backpack: true,
-    mainHand: true,
-    offHand: true,
-    twoHanded: false,
-    pocket: false,
-    ring: false,
-    amulet: false
-  },
-  armor: {
-    armor: true,
-    backpack: true,
-    mainHand: false,
-    offHand: false,
-    twoHanded: false,
-    pockets: false,
-    ring: false,
-    amulet: false
-  },
-  shield: {
-    armor: false,
-    backpack: true,
-    mainHand: false,
-    offHand: true,
-    twoHanded: false,
-    pockets: false,
-    ring: false,
-    amulet: false
-  },
-  twoHanded: {
-    armor: false,
-    backpack: true,
-    mainHand: false,
-    offHand: false,
-    twoHanded: true,
-    pockets: false,
-    ring: false,
-    amulet: false
-  },
-  potion: {
-    armor: false,
-    backpack: true,
-    mainHand: false,
-    offHand: false,
-    twoHanded: false,
-    pockets: true,
-    ring: false,
-    amulet: false
-  },
-  ring: {
-    armor: false,
-    backpack: true,
-    mainHand: false,
-    offHand: false,
-    twoHanded: false,
-    pockets: false,
-    ring: true,
-    amulet: false
-  },
-  amulet: {
-    armor: false,
-    backpack: true,
-    mainHand: false,
-    offHand: false,
-    twoHanded: false,
-    pockets: false,
-    ring: false,
-    amulet: true
-  }
-};
-
 const armorList = [
   {
-    name: 'Leather armor',
-    ID: 'IA0001',
+    name: 'Leather',
     AC: 1,
-    armorType: 'light',
-    price: 20,
-    slots: slotType.armor
+    maxDexMod: 5,
+    reqStr: 0,
+    price: 20
   },
   {
-    name: 'Shield',
-    ID: 'IA0002',
+    name: 'Studded Leather',
     AC: 2,
-    price: 60,
-    slots: slotType.shield
+    maxDexMod: 5,
+    reqStr: 0,
+    price: 90
+  },
+  {
+    name: 'Hide',
+    AC: 2,
+    maxDexMod: 2,
+    reqStr: 0,
+    price: 20
   },
   {
     name: 'Chain shirt',
-    ID: 'IA0003',
     AC: 3,
-    armorType: 'medium',
-    price: 100,
-    slots: slotType.armor
+    maxDexMod: 2,
+    reqStr: 0,
+    price: 100
+  },
+  {
+    name: 'Breastplate',
+    AC: 4,
+    maxDexMod: 2,
+    reqStr: 0,
+    price: 800
+  },
+  {
+    name: 'Half Plate',
+    AC: 5,
+    maxDexMod: 2,
+    reqStr: 0,
+    price: 1500
+  },
+  {
+    name: 'Ring mail',
+    AC: 4,
+    maxDexMod: 0,
+    reqStr: 0,
+    price: 60
   },
   {
     name: 'Chain mail',
-    ID: 'IA0004',
     AC: 6,
-    armorType: 'heavy',
-    price: 150,
-    slots: slotType.armor
+    maxDexMod: 0,
+    reqStr: 13,
+    price: 150
+  },
+  {
+    name: 'Splint',
+    AC: 7,
+    maxDexMod: 0,
+    reqStr: 13,
+    price: 400
+  },
+  {
+    name: 'Plate',
+    AC: 8,
+    maxDexMod: 0,
+    reqStr: 15,
+    price: 3000
   }
 ];
 
+const shieldList = [
+  {
+    name: 'Shield',
+    AC: 2,
+    price: 60
+  }
+];
+
+// 149. oldal
 const weaponList = [
   {
     name: 'Dagger',
-    ID: 'IW0001',
+    dmgDisplay: '1-6',
     dmg: dice.roll(1, 6),
     price: 10,
-    slots: slotType.oneHandedWeapon
+    type: 'onehanded'
   },
   {
     name: 'Longsword',
-    ID: 'IW0002',
+    dmgDisplay: '1-10',
     dmg: dice.roll(1, 10),
     price: 60,
-    slots: slotType.oneHandedWeapon
+    type: 'onehanded'
   },
   {
     name: 'Shortsword',
-    ID: 'IW0003',
+    dmgDisplay: '1-8',
     dmg: dice.roll(1, 8),
     price: 40,
-    slots: slotType.oneHandedWeapon
+    type: 'onehanded'
   }
 ];
 
-const miscList = [
+const potionList = [
   {
     name: 'Small HP potion',
-    ID: 'IM0001',
     price: 20,
-    slots: slotType.potion,
+    healDisplay: '3-10',
     heal: dice.roll(1, 8) + 2
   },
   {
     name: 'Medium HP potion',
-    ID: 'IM0002',
     price: 80,
-    slots: slotType.potion,
+    healDisplay: '4-18',
     heal: dice.roll(2, 8) + 2
   },
   {
-    name: 'Small HP potion',
-    ID: 'IM0003',
+    name: 'Great HP potion',
     price: 120,
-    slots: slotType.potion,
+    healDisplay: '8-22',
     heal: dice.roll(2, 8) + 6
-  },
+  }
+];
+
+const ringList = [
   {
     name: 'Ring of Protection',
-    ID: 'IM0004',
     price: 300,
-    slots: slotType.ring,
-    AC: 1
+    AC: 1,
+    dmg: 0
+  },
+  {
+    name: 'Ring of Greater Protection',
+    price: 600,
+    AC: 2,
+    dmg: 0
+  },
+  {
+    name: 'Ring of Power',
+    price: 300,
+    AC: 0,
+    dmg: 1
+  },
+  {
+    name: 'Ring of Greater Power',
+    price: 600,
+    AC: 0,
+    dmg: 2
+  },
+  {
+    name: 'Ring of the Warrior',
+    price: 600,
+    AC: 1,
+    dmg: 1
+  },
+  {
+    name: 'Ring of the Knight',
+    price: 1200,
+    AC: 2,
+    dmg: 2
+  },
+  {
+    name: 'Ring of the King',
+    price: 1800,
+    AC: 3,
+    dmg: 3
+  }
+];
+
+const amuletList = [
+  {
+    name: 'Amulet of the Warrior',
+    price: 1000,
+    AC: 1,
+    dmg: 1
+  },
+  {
+    name: 'Amulet of the Knight',
+    price: 2000,
+    AC: 2,
+    dmg: 2
+  },
+  {
+    name: 'Amulet of the King',
+    price: 3000,
+    AC: 3,
+    dmg: 3
   }
 ];
 
 module.exports = {
-  slotType,
   armorList,
+  shieldList,
   weaponList,
-  miscList
+  potionList,
+  ringList,
+  amuletList
 };
