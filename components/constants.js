@@ -47,14 +47,14 @@ const blankCharacter = {
       },
     ],
     shield: [],
-    potion: ['', '', ''],
+    potion: [],
     ring: [],
     amulet: [],
     backpack: {
       armor: [],
       shield: [],
       weapon: [],
-      pockets: [],
+      potion: [],
       ring: [],
       amulet: []
     }

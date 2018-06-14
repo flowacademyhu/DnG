@@ -74,6 +74,9 @@ const inventoryDesign = (charSheet) => {
   let backpackListArmor = backpackArmor(charSheet);
   let backpackListWeapon = backpackWeapon(charSheet);
   let backpackListShield = backpackShield(charSheet);
+  let backpackListPotion = backpackPotion(charSheet);
+  let backpackListRing = backpackRing(charSheet);
+  let backpackListAmulet = backpackAmulet(charSheet);
 
   let designTable = [
     [' ', `Gold:`, charSheet.gold, ' '],
@@ -84,7 +87,13 @@ const inventoryDesign = (charSheet) => {
     [' ', backpackListArmor[3], backpackListShield[3], backpackListWeapon[3]],
     [' ', backpackListArmor[4], backpackListShield[4], backpackListWeapon[4]],
     [' ', backpackListArmor[5], backpackListShield[5], backpackListWeapon[5]],
-    [' ', 'Armors:', 'Shields:', 'Weapons:']
+    [' ', 'Potions:', 'Rings:', 'Amulets:'],
+    [' ', backpackListPotion[0], backpackListRing[0], backpackListAmulet[0]],
+    [' ', backpackListPotion[1], backpackListRing[1], backpackListAmulet[1]],
+    [' ', backpackListPotion[2], backpackListRing[2], backpackListAmulet[2]],
+    [' ', backpackListPotion[3], backpackListRing[3], backpackListAmulet[3]],
+    [' ', backpackListPotion[4], backpackListRing[4], backpackListAmulet[4]],
+    [' ', backpackListPotion[5], backpackListRing[5], backpackListAmulet[5]]
   ];
 
   let config = {
@@ -93,13 +102,13 @@ const inventoryDesign = (charSheet) => {
         width: 1
       },
       1: {
-        width: 30
+        width: 35
       },
       2: {
-        width: 30
+        width: 35
       },
       3: {
-        width: 30
+        width: 35
       }
     }
   };
@@ -111,7 +120,7 @@ const backpackArmor = (charSheet) => {
   let backpackListArmor = [];
 
   if (charSheet.equipment.armor.length > 0) {
-    backpackListArmor.push(`${charSheet.equipment.armor[0].name} | ${charSheet.equipment.armor[0].AC} AC | min.Str. ${charSheet.equipment.armor[0].reqStr}`);
+    backpackListArmor.push(`[X] ${charSheet.equipment.armor[0].name} | ${charSheet.equipment.armor[0].AC} AC | min.Str. ${charSheet.equipment.armor[0].reqStr}`);
   }
 
   charSheet.equipment.backpack.armor.forEach(element => {
@@ -125,7 +134,7 @@ const backpackShield = (charSheet) => {
   let backpackListShield = [];
 
   if (charSheet.equipment.shield.length > 0) {
-    backpackListShield.push(`${charSheet.equipment.shield[0].name} | ${charSheet.equipment.shield[0].AC} AC`);
+    backpackListShield.push(`[X] ${charSheet.equipment.shield[0].name} | ${charSheet.equipment.shield[0].AC} AC`);
   }
 
   charSheet.equipment.backpack.shield.forEach(element => {
@@ -139,7 +148,7 @@ const backpackWeapon = (charSheet) => {
   let backpackListWeapon = [];
 
   if (charSheet.equipment.weapon.length > 0) {
-    backpackListWeapon.push(`${charSheet.equipment.weapon[0].name} | ${charSheet.equipment.weapon[0].dmgDisplay} dmg`);
+    backpackListWeapon.push(`[X] ${charSheet.equipment.weapon[0].name} | ${charSheet.equipment.weapon[0].dmgDisplay} dmg`);
   }
 
   charSheet.equipment.backpack.weapon.forEach(element => {
@@ -147,6 +156,54 @@ const backpackWeapon = (charSheet) => {
   });
 
   return backpackListWeapon;
+};
+
+const backpackPotion = (charSheet) => {
+  let backpackListPotion = [];
+
+  if (charSheet.equipment.potion.length > 0) {
+    charSheet.equipment.potion.forEach(element => {
+      backpackListPotion.push(`[X] ${element.name} | ${element.healDisplay} HP`);
+    });
+  }
+
+  charSheet.equipment.backpack.potion.forEach(element => {
+    backpackListPotion.push(`${element.name} | ${element.healDisplay} HP `);
+  });
+
+  return backpackListPotion;
+};
+
+const backpackRing = (charSheet) => {
+  let backpackListRing = [];
+
+  if (charSheet.equipment.ring.length > 0) {
+    charSheet.equipment.ring.forEach(element => {
+      backpackListRing.push(`[X] ${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+    });
+  }
+
+  charSheet.equipment.backpack.ring.forEach(element => {
+    backpackListRing.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+  });
+
+  return backpackListRing;
+};
+
+const backpackAmulet = (charSheet) => {
+  let backpackListAmulet = [];
+
+  if (charSheet.equipment.amulet.length > 0) {
+    charSheet.equipment.amulet.forEach(element => {
+      backpackListAmulet.push(`[X] ${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+    });
+  }
+
+  charSheet.equipment.backpack.amulet.forEach(element => {
+    backpackListAmulet.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+  });
+
+  return backpackListAmulet;
 };
 
 module.exports = {

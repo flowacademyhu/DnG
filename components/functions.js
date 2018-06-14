@@ -151,6 +151,8 @@ const characterMenu = (charSheet) => {
   }
 };
 
+// SHOP
+
 const shop = (charSheet) => {
   while (true) {
     clear();
@@ -163,6 +165,12 @@ const shop = (charSheet) => {
       shopShield(charSheet);
     } else if (index === 2) {
       shopWeapon(charSheet);
+    } else if (index === 3) {
+      shopPotion(charSheet);
+    } else if (index === 4) {
+      shopRing(charSheet);
+    } else if (index === 5) {
+      shopAmulet(charSheet);
     } else if (index === -1) {
       break;
     }
@@ -175,7 +183,7 @@ const shopArmor = (charSheet) => {
 
   let armorList = [];
   items.armorList.forEach(item => {
-    armorList.push(`${item.name} | ${item.AC} AC | ${item.price} gold | ${item.reqStr} min.Str.`);
+    armorList.push(`${item.name} | ${item.AC} AC | ${item.reqStr} min.Str. | ${item.price} gold`);
   });
   let indexArmor = readlineSync.keyInSelect(armorList, '', {cancel: 'Back'});
 
@@ -225,7 +233,7 @@ const shopWeapon = (charSheet) => {
 
   let weaponList = [];
   items.weaponList.forEach(item => {
-    weaponList.push(`${item.name} | ${item.dmgDisplay} dmg | ${item.price} gold `);
+    weaponList.push(`${item.name} | ${item.dmgDisplay} dmg | ${item.price} gold`);
   });
   let indexWeapon = readlineSync.keyInSelect(weaponList, '', {cancel: 'Back'});
 
@@ -241,6 +249,81 @@ const shopWeapon = (charSheet) => {
   } else {
     charSheet.gold -= items.weaponList[indexWeapon].price;
     charSheet.equipment.backpack.weapon.push(items.weaponList[indexWeapon]);
+  }
+};
+
+const shopPotion = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let potionList = [];
+  items.potionList.forEach(item => {
+    potionList.push(`${item.name} | ${item.healDisplay} HP | ${item.price} gold`);
+  });
+  let indexPotion = readlineSync.keyInSelect(potionList, '', {cancel: 'Back'});
+
+  if (indexPotion === -1) {
+    return;
+  }
+
+  clear();
+  design.inventoryDesign(charSheet);
+
+  if (items.potionList[indexPotion].price > charSheet.gold) {
+    readlineSync.question('Not enough gold! Press enter to continue...');
+  } else {
+    charSheet.gold -= items.potionList[indexPotion].price;
+    charSheet.equipment.backpack.potion.push(items.potionList[indexPotion]);
+  }
+};
+
+const shopRing = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let ringList = [];
+  items.ringList.forEach(item => {
+    ringList.push(`${item.name} | ${item.AC} AC | ${item.ATK} ATK | ${item.price} gold`);
+  });
+  let indexRing = readlineSync.keyInSelect(ringList, '', {cancel: 'Back'});
+
+  if (indexRing === -1) {
+    return;
+  }
+
+  clear();
+  design.inventoryDesign(charSheet);
+
+  if (items.ringList[indexRing].price > charSheet.gold) {
+    readlineSync.question('Not enough gold! Press enter to continue...');
+  } else {
+    charSheet.gold -= items.ringList[indexRing].price;
+    charSheet.equipment.backpack.ring.push(items.ringList[indexRing]);
+  }
+};
+
+const shopAmulet = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let amuletList = [];
+  items.amuletList.forEach(item => {
+    amuletList.push(`${item.name} | ${item.AC} AC | ${item.ATK} ATK | ${item.price} gold`);
+  });
+  let indexAmulet = readlineSync.keyInSelect(amuletList, '', {cancel: 'Back'});
+
+  if (indexAmulet === -1) {
+    return;
+  }
+
+  clear();
+  design.inventoryDesign(charSheet);
+
+  if (items.amuletList[indexAmulet].price > charSheet.gold) {
+    readlineSync.question('Not enough gold! Press enter to continue...');
+  } else {
+    charSheet.gold -= items.amuletList[indexAmulet].price;
+    charSheet.equipment.backpack.amulet.push(items.amuletList[indexAmulet]);
   }
 };
 

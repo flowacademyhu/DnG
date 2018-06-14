@@ -132,43 +132,43 @@ const ringList = [
     name: 'Ring of Protection',
     price: 300,
     AC: 1,
-    dmg: 0
+    ATK: 0
   },
   {
     name: 'Ring of Greater Protection',
     price: 600,
     AC: 2,
-    dmg: 0
+    ATK: 0
   },
   {
     name: 'Ring of Power',
     price: 300,
     AC: 0,
-    dmg: 1
+    ATK: 1
   },
   {
     name: 'Ring of Greater Power',
     price: 600,
     AC: 0,
-    dmg: 2
+    ATK: 2
   },
   {
     name: 'Ring of the Warrior',
     price: 600,
     AC: 1,
-    dmg: 1
+    ATK: 1
   },
   {
     name: 'Ring of the Knight',
     price: 1200,
     AC: 2,
-    dmg: 2
+    ATK: 2
   },
   {
     name: 'Ring of the King',
     price: 1800,
     AC: 3,
-    dmg: 3
+    ATK: 3
   }
 ];
 
@@ -177,19 +177,19 @@ const amuletList = [
     name: 'Amulet of the Warrior',
     price: 1000,
     AC: 1,
-    dmg: 1
+    ATK: 1
   },
   {
     name: 'Amulet of the Knight',
     price: 2000,
     AC: 2,
-    dmg: 2
+    ATK: 2
   },
   {
     name: 'Amulet of the King',
     price: 3000,
     AC: 3,
-    dmg: 3
+    ATK: 3
   }
 ];
 
