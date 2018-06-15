@@ -190,7 +190,7 @@ const humanoidList = [
     },
     atkMod: 7,
     init: 6,
-    numOfAtks: 3
+    numOfAtks: 4
   },
   {
     name: 'Gladiator',
