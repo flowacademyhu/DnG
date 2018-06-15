@@ -5,70 +5,60 @@ const armorList = [
     name: 'Leather',
     AC: 1,
     maxDexMod: 5,
-    reqStr: 0,
     price: 20
   },
   {
     name: 'Studded Leather',
     AC: 2,
     maxDexMod: 5,
-    reqStr: 0,
     price: 90
   },
   {
     name: 'Hide',
     AC: 2,
     maxDexMod: 2,
-    reqStr: 0,
     price: 20
   },
   {
     name: 'Chain shirt',
     AC: 3,
     maxDexMod: 2,
-    reqStr: 0,
     price: 100
   },
   {
     name: 'Breastplate',
     AC: 4,
     maxDexMod: 2,
-    reqStr: 0,
     price: 800
   },
   {
     name: 'Half Plate',
     AC: 5,
     maxDexMod: 2,
-    reqStr: 0,
     price: 1500
   },
   {
     name: 'Ring mail',
     AC: 4,
     maxDexMod: 0,
-    reqStr: 0,
     price: 60
   },
   {
     name: 'Chain mail',
     AC: 6,
     maxDexMod: 0,
-    reqStr: 13,
     price: 150
   },
   {
     name: 'Splint',
     AC: 7,
     maxDexMod: 0,
-    reqStr: 13,
     price: 400
   },
   {
     name: 'Plate',
     AC: 8,
     maxDexMod: 0,
-    reqStr: 15,
     price: 3000
   }
 ];
@@ -81,7 +71,6 @@ const shieldList = [
   }
 ];
 
-// 149. oldal
 const weaponList = [
   {
     name: 'Dagger',

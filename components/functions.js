@@ -144,6 +144,8 @@ const characterMenu = (charSheet) => {
       console.log('Enter Fight');
     } else if (index === 1) {
       shop(charSheet);
+    } else if (index === 2) {
+      inventory(charSheet);
     } else if (index === -1) {
       saveChars(charSheet);
       break;
@@ -157,7 +159,7 @@ const shop = (charSheet) => {
   while (true) {
     clear();
     design.inventoryDesign(charSheet);
-    let answers = ['Armor', 'Shield', 'Weapon', 'Potion', 'Ring', 'Amulet'];
+    let answers = ['Buy Armor', 'Buy Shield', 'Buy Weapon', 'Buy Potion', 'Buy Ring', 'Buy Amulet'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Exit from Shop'});
     if (index === 0) {
       shopArmor(charSheet);
@@ -183,7 +185,7 @@ const shopArmor = (charSheet) => {
 
   let armorList = [];
   items.armorList.forEach(item => {
-    armorList.push(`${item.name} | ${item.AC} AC | ${item.reqStr} min.Str. | ${item.price} gold`);
+    armorList.push(`${item.name} | ${item.AC} AC | ${item.maxDexMod} max.Dex.mod. | ${item.price} gold`);
   });
   let indexArmor = readlineSync.keyInSelect(armorList, '', {cancel: 'Back'});
 
@@ -325,6 +327,72 @@ const shopAmulet = (charSheet) => {
     charSheet.gold -= items.amuletList[indexAmulet].price;
     charSheet.equipment.backpack.amulet.push(items.amuletList[indexAmulet]);
   }
+};
+
+// INVENTORY
+
+const inventory = (charSheet) => {
+  while (true) {
+    clear();
+    design.inventoryDesign(charSheet);
+    let answers = ['Equip Armor', 'Equip Shield', 'Equip Weapon', 'Equip Potion', 'Equip Ring', 'Equip Amulet'];
+    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Exit from Inventory'});
+    if (index === 0) {
+      equipArmor(charSheet);
+    } else if (index === 1) {
+      equipShield(charSheet);
+    } else if (index === 2) {
+    } else if (index === 3) {
+    } else if (index === 4) {
+    } else if (index === 5) {
+    } else if (index === -1) {
+      break;
+    }
+  }
+};
+
+const equipArmor = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let equipListArmor = [];
+  charSheet.equipment.backpack.armor.forEach(element => {
+    equipListArmor.push(`${element.name} | ${element.AC} AC | ${element.maxDexMod} max.Dex.Mod`);
+  });
+  let indexArmor = readlineSync.keyInSelect(equipListArmor, '', {cancel: 'Back'});
+
+  if (indexArmor === -1) {
+    return;
+  }
+
+  if (charSheet.equipment.armor.length > 0) {
+    charSheet.equipment.backpack.armor.push(charSheet.equipment.armor[0]);
+    charSheet.equipment.armor.splice(0, 1);
+  }
+  charSheet.equipment.armor.push(charSheet.equipment.backpack.armor[indexArmor]);
+  charSheet.equipment.backpack.armor.splice(indexArmor, 1);
+};
+
+const equipShield = (charSheet) => {
+  clear();
+  design.inventoryDesign(charSheet);
+
+  let equipListShield = [];
+  charSheet.equipment.backpack.shield.forEach(element => {
+    equipListShield.push(`${element.name} | ${element.AC} AC`);
+  });
+  let indexShield = readlineSync.keyInSelect(equipListShield, '', {cancel: 'Back'});
+
+  if (indexShield === -1) {
+    return;
+  }
+
+  if (charSheet.equipment.shield.length > 0) {
+    charSheet.equipment.backpack.shield.push(charSheet.equipment.shield[0]);
+    charSheet.equipment.shield.splice(0, 1);
+  }
+  charSheet.equipment.shield.push(charSheet.equipment.backpack.shield[indexShield]);
+  charSheet.equipment.backpack.shield.splice(indexShield, 1);
 };
 
 // EXPORT

@@ -30,7 +30,7 @@ const sheetDesign = (charSheet) => {
     ['Health:', charSheet.HP, 'Temporal HP:', charSheet.tempHP, 'Race:', charSheet.race],
     ['AC:', charSheet.AC, 'Init:', charSheet.init, 'Gold:', charSheet.gold],
     ['Prof:', charSheet.proficiency, 'ATK:', charSheet.ATK, 'Armor:', charSheet.equipment.armor[0].name],
-    ['Strength (Str):', charSheet.attributes.Str, 'Str Modifier:', charSheet.modifiers.StrMOD, 'Weapon/Shield:', charSheet.equipment.weapon[0].name],
+    ['Strength (Str):', charSheet.attributes.Str, 'Str Modifier:', charSheet.modifiers.StrMOD, 'Weapon/Shield:', `${charSheet.equipment.weapon[0].name} | ${charSheet.equipment.shield[0].name}`],
     ['Dexterity (Dex):', charSheet.attributes.Dex, 'Dex Modifier:', charSheet.modifiers.DexMOD, 'Ring:', charSheet.equipment.ring],
     ['Constitution (Con):', charSheet.attributes.Con, 'Con Modifier:', charSheet.modifiers.ConMOD, 'Amulet:', charSheet.equipment.amulet],
     ['Intelligence (Int):', charSheet.attributes.Int, 'Int Modifier:', charSheet.modifiers.IntMOD, 'Pocket Slot 1:', charSheet.equipment.potion[0]],
@@ -102,13 +102,13 @@ const inventoryDesign = (charSheet) => {
         width: 1
       },
       1: {
-        width: 35
+        width: 40
       },
       2: {
-        width: 35
+        width: 40
       },
       3: {
-        width: 35
+        width: 40
       }
     }
   };
@@ -120,11 +120,11 @@ const backpackArmor = (charSheet) => {
   let backpackListArmor = [];
 
   if (charSheet.equipment.armor.length > 0) {
-    backpackListArmor.push(`[X] ${charSheet.equipment.armor[0].name} | ${charSheet.equipment.armor[0].AC} AC | min.Str. ${charSheet.equipment.armor[0].reqStr}`);
+    backpackListArmor.push(`[X] ${charSheet.equipment.armor[0].name} | ${charSheet.equipment.armor[0].AC} AC | ${charSheet.equipment.armor[0].maxDexMod} max.Dex.Mod.`);
   }
 
   charSheet.equipment.backpack.armor.forEach(element => {
-    backpackListArmor.push(`${element.name} | ${element.AC} AC | min.Str. ${element.reqStr}`);
+    backpackListArmor.push(`${element.name} | ${element.AC} AC | ${element.maxDexMod} max.Dex.Mod`);
   });
 
   return backpackListArmor;
