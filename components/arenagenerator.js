@@ -1,7 +1,5 @@
 const dice = require('./dice');
 const monsters = require('./monsters');
-const readlineSync = require('readline-sync');
-const fs = require('fs');
 const clone = require('clone');
 
 // basicly works but there is some problem with, the random generator.
@@ -22,23 +20,10 @@ const choosePool = () => {
   return pool;
 };
 
-// Define sum CR
+// Calculate sum CR
 const sumCR = (difficulty, lvl) => {
   let sumCR = (difficulty * 0.25) * lvl;
   return sumCR;
-};
-
-// Picks a monster from the type list. That was a try to solve the random stats problem.
-const pickMonster = (type, sumCR) => {
-  let monster;
-  if (type === monsters.beastList) {
-    monster = monsters.beastList.filter(monster => monster.CR < sumCR);
-  } else if (type === monsters.undeadList) {
-    monster = monsters.undeadList.filter(monster => monster.CR < sumCR);
-  } else if (type === monsters.humanoidList) {
-    monster = monsters.humanoidList.filter(monster => monster.CR < sumCR);
-  }
-  return monster;
 };
 
 // Take random monster from type till CR === Monsters CR; Every monster sould make random vals.
@@ -50,8 +35,11 @@ const genPop = (sumCR) => {
   let remCR = sumCR;
 
   for (let i = 0; i < 8; i++) {
+    // pick a monster object from list, clone and add to pop
     monster = type.filter(monster => monster.CR <= remCR);
-    population[i] = monster[dice.randomIndex(monster)];
+    population[i] = clone(monster[dice.randomIndex(monster)]);
+    // generate fix HP
+    population[i].HP = population[i].HP();
 
     if (population[i] === undefined) {
       break;
@@ -67,4 +55,8 @@ const genPop = (sumCR) => {
   return population;
 };
 
-console.log('pop:', genPop(4));
+module.exports = {
+  choosePool,
+  sumCR,
+  genPop
+};
