@@ -13,6 +13,12 @@ const roll = (db, side) => {
   return result;
 };
 
+const randomIndex = (array) => {
+  let max = array.length;
+  let result = Math.floor((Math.random() * max));
+  return result;
+};
+
 const rollAdv = () => {
   let i = 0;
   let x = [];
@@ -81,5 +87,7 @@ module.exports = {
   rollDisAdv: rollDisAdv,
   min: min,
   rollAtr: rollAtr,
-  genAtr: genAtr
+  genAtr: genAtr,
+  sum: sum,
+  randomIndex
 };
