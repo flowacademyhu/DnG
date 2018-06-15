@@ -65,9 +65,19 @@ const armorList = [
 
 const shieldList = [
   {
-    name: 'Shield',
+    name: 'Small Shield',
     AC: 2,
-    price: 60
+    price: 100
+  },
+  {
+    name: 'Medium Shield',
+    AC: 3,
+    price: 200
+  },
+  {
+    name: 'Large Shield',
+    AC: 4,
+    price: 300
   }
 ];
 
