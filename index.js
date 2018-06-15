@@ -3,23 +3,25 @@ const design = require('./components/design');
 const clear = require('console-clear');
 
 while (true) {
-  // Main Screen
   clear();
   design.logo();
   let mainMenuIndex = functions.mainMenu();
 
   if (mainMenuIndex === 0) {
+    let charSheet = functions.createCharacter();
     while (true) {
-      let charSheet = functions.createCharacter();
-      console.log(charSheet);
+      functions.characterMenu(charSheet);
       break;
     }
   } else if (mainMenuIndex === 1) {
     let charSheet = functions.loadChars();
-    console.log(charSheet);
-    break;
-  } else if (mainMenuIndex === 2) {
-    console.log('Quit');
+    while (true) {
+      functions.characterMenu(charSheet);
+      break;
+    }
+  } else if (mainMenuIndex === -1) {
+    clear();
+    console.log('Goodbye!');
     break;
   }
 }
