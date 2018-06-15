@@ -1,12 +1,13 @@
-const dummy = require('./dummy');
+const dice = require('./dice');
 
 const blankCharacter = {
   name: ' ',
   race: ' ',
   lvl: 1,
   exp: 0,
-  HP: 0,
+  HP: 4,
   tempHP: 0,
+  ATK: 0,
   attributes: {
     Str: 0,
     Dex: 0,
@@ -27,11 +28,39 @@ const blankCharacter = {
   AC: 0,
   init: 0,
   equipment: {
-    armor: 'ID002'
-  }
+    armor: [
+      {
+        name: 'Rugs',
+        AC: 0,
+        maxDexMod: 5,
+        reqStr: 0,
+        price: 0
+      }
+    ],
+    weapon: [
+      {
+        name: 'Rusty Dagger',
+        dmgDisplay: '1-3',
+        dmg: dice.roll(1, 3),
+        price: 0,
+        type: 'onehanded'
+      },
+    ],
+    shield: [],
+    potion: [],
+    ring: [],
+    amulet: [],
+    backpack: {
+      armor: [],
+      shield: [],
+      weapon: [],
+      potion: [],
+      ring: [],
+      amulet: []
+    }
+  },
+  gold: 0
 };
-
-// console.log(dummy.armors.filter(item => item.ID === 'ID002'));
 
 module.exports = {
   blankCharacter
