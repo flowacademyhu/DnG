@@ -27,7 +27,7 @@ const sumCR = (difficulty, lvl) => {
   return sumCR;
 };
 
-// Take random monster from type till CR === Monsters CR;
+// Take random monster from type till CR === Monsters CR; gen INIT and HP
 const genPop = (sumCR) => {
   let population = [];
   let type = choosePool();
@@ -38,7 +38,6 @@ const genPop = (sumCR) => {
   for (let i = 0; i < 8; i++) {
     // pick a monster object from list, clone and add to pop, after monster expansion put remCR crit down to 1.5
     monster = type.filter(monster => monster.CR <= remCR);
-    console.log(monster);
     monster = monster.filter(monster => monster.CR >= remCR - 4);
     population[i] = clone(monster[dice.randomIndex(monster)]);
     // generate fix HP and Initiative
@@ -67,8 +66,8 @@ const blankCharacter = {
   lvl: 5,
   exp: 0,
   HP: 20,
-  tempHP: 50,
-  ATK: 5,
+  tempHP: 20,
+  ATK: 2,
   attributes: {
     Str: 3,
     Dex: 3,
@@ -125,6 +124,8 @@ const blankCharacter = {
   gold: 0
 };
 
+// console.log(blankCharacter.tempHP());
+
 const remainingHPOfGenPop = (genPop) => {
   let remainingHP = 0;
   for (let i = 0; i < genPop.length; i++) {
@@ -177,26 +178,101 @@ const enemyAttack = (enemy, player) => {
   }
 };
 
-let x = genPop(5);
+// Clear dead enemies from list
+const clearDead = (enemies) => {
+  for (let m = 0; m < enemies.length; m++) {
+    if (enemies[m].HP <= 0) {
+      enemies.splice(m, 1);
+    }
+  }
+  return enemies;
+};
 
-console.log(x);
-// playerAttack(blankCharacter, x[0]);
-// playerAttack(blankCharacter, x[0]);
-
-const combat = (genPop, character) => {
-  let enemies = genPop(0.5);
-  let player = character;
-  let playerInit = blankCharacter.init + dice.roll(1, 20);
-  let turnCounter = 1;
-  let initCounter = 30;
-
-  while (blankCharacter.tempHP > 0 && remainingHPOfGenPop(enemies) === 0) {
-
+// in case its players turn...
+const playerUI = (player, enemies) => {
+  while (true) {
+    let answers = ['Attack', 'Drink Potion', 'Special'];
+    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Do nothing'});
+    if (index === 0) {
+      // who to attack?
+      // break
+    } else if (index === 1) {
+      // What to drink, drink it
+      // continue
+    } else if (index === 2) {
+      // what, apply execute
+      // continue
+    } else {
+      break;
+    }
   }
 };
+// console.log(index);
+
+// let x = genPop(5);
+
+// console.log(x);
+// playerAttack(blankCharacter, x[0]);
+// playerAttack(blankCharacter, x[0]);
+
+const checkWinner = (character) => {
+  if (character.tempHP > 0) {
+    console.log('You are victorious!');
+    character.exp += 100;
+    character.gold += 100;
+    // winnings
+  } else {
+    console.log('You have been defeated!');
+    character.exp += 50;
+    character.gold += 0;
+  }
+};
+
+const combat = (enemies, character) => {
+  let characterInit = character.init + dice.roll(1, 20);
+  console.log('CharacterInit =', characterInit);
+  let turnCounter = 1;
+  console.log('enemies:', enemies);
+  console.log('starting HP of player: ' + character.tempHP + ' starting HP of enemies: ' + remainingHPOfGenPop(enemies));
+  // check death
+
+  while (character.tempHP > 0 && remainingHPOfGenPop(enemies) > 0) {
+    let initCounter = 30;
+    console.log('Turn:', turnCounter);
+    for (initCounter; initCounter > -5; initCounter--) {
+      // console.log(initCounter);
+      if (characterInit === initCounter) {
+        // player ui;
+        playerAttack(character, enemies[0]);
+        // after every attack:
+        enemies = clearDead(enemies);
+      }
+      for (let m = 0; m < enemies.length; m++) {
+        if (enemies[m].init === initCounter) {
+          enemyAttack(enemies[m], character);
+          if (character.tempHP <= 0) {
+            break;
+          }
+        }
+      }
+      if (character.tempHP <= 0) {
+        break;
+      }
+    }
+    turnCounter += 1;
+  }
+  checkWinner(character);
+};
+
+combat(genPop(1), blankCharacter);
 
 module.exports = {
   choosePool,
   sumCR,
-  genPop
+  genPop,
+  clearDead,
+  remainingHPOfGenPop,
+  playerAttack,
+  enemyAttack,
+  playerUI
 };
