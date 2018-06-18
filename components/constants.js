@@ -5,8 +5,7 @@ const blankCharacter = {
   race: ' ',
   lvl: 1,
   exp: 0,
-  HP: 4,
-  tempHP: 0,
+  HP: 0,
   ATK: 0,
   attributes: {
     Str: 0,
@@ -44,7 +43,7 @@ const blankCharacter = {
         dmg: dice.roll(1, 3),
         price: 0,
         type: 'onehanded'
-      },
+      }
     ],
     shield: [],
     potion: [],
