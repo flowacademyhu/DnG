@@ -65,8 +65,8 @@ const blankCharacter = {
   race: 'EMBER',
   lvl: 5,
   exp: 0,
-  HP: 20,
-  tempHP: 20,
+  HP: 60,
+  tempHP: 60,
   ATK: 2,
   attributes: {
     Str: 3,
@@ -87,6 +87,7 @@ const blankCharacter = {
   proficiency: 2,
   AC: 15,
   init: 3,
+  numOfAtks: 4,
   equipment: {
     armor: [
       {
@@ -109,7 +110,24 @@ const blankCharacter = {
       }
     ],
     shield: [],
-    potion: [],
+    potion: [
+      {
+        name: 'Medium HP potion',
+        price: 80,
+        healDisplay: '4-18',
+        heal: () => {
+          return dice.roll(2, 8) + 2;
+        }
+      },
+      {
+        name: 'Small HP potion',
+        price: 20,
+        healDisplay: '3-10',
+        heal: () => {
+          return dice.roll(1, 8) + 2;
+        }
+      }
+    ],
     ring: [],
     amulet: [],
     backpack: {
@@ -161,6 +179,7 @@ const playerAttack = (player, enemy) => {
 const enemyAttack = (enemy, player) => {
   let attackRoll = dice.roll(1, 20);
   let dmg = enemy.dmg();
+
   if (enemy.atkMod + attackRoll >= player.AC && attackRoll === 20) {
     player.tempHP -= dmg * 2;
     if (player.tempHP <= 0) {
@@ -188,17 +207,62 @@ const clearDead = (enemies) => {
   return enemies;
 };
 
+const makeChoiceOfEnemies = (enemies) => {
+  let choices = [];
+  for (let m = 0; m < enemies.length; m++) {
+    choices[m] = enemies[m].name + ' HP: ' + enemies[m].HP;
+  }
+  return choices;
+};
+
+const makeChoiceOfPotion = (player) => {
+  let choices = [];
+  for (let m = 0; m < player.equipment.potion.length; m++) {
+    choices[m] = player.equipment.potion[m].name + ' Heals: ' + player.equipment.potion[m].healDisplay;
+  }
+  return choices;
+};
+
+// drink, remove potion
+const drinkPotion = (player, potion, indexOfPotion) => {
+  let healedHP = potion.heal();
+  console.log('The potion healed: ' + healedHP + ' HP');
+  player.tempHP += healedHP;
+  if (player.tempHP > player.HP) {
+    player.tempHP = player.HP;
+  }
+  player.equipment.potion.splice(indexOfPotion, 1);
+  console.log('Your HP now: ' + player.tempHP);
+};
+
 // in case its players turn...
 const playerUI = (player, enemies) => {
   while (true) {
     let answers = ['Attack', 'Drink Potion', 'Special'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Do nothing'});
+
     if (index === 0) {
-      // who to attack?
-      // break
+      for (let i = 0; i < player.numOfAtks; i++) {
+        let answers = makeChoiceOfEnemies(enemies);
+        let whoToAttack = readlineSync.keyInSelect(answers, 'Who do you want to attack?', {cancel: 'Cancel'});
+        playerAttack(player, enemies[whoToAttack]);
+        enemies = clearDead(enemies);
+        if (enemies[0] === undefined) {
+          console.log('All enemies have been defeated!');
+          break;
+        }
+      }
+      break;
     } else if (index === 1) {
-      // What to drink, drink it
-      // continue
+      let answers = makeChoiceOfPotion(player);
+      console.log(makeChoiceOfPotion(player));
+      if (answers[0] === undefined) {
+        console.log('You do not have any potions left');
+        continue;
+      }
+      let whatToDrink = readlineSync.keyInSelect(answers, 'Drink:', {cancel: 'Cancel'});
+      drinkPotion(player, player.equipment.potion[whatToDrink], whatToDrink);
+      continue;
     } else if (index === 2) {
       // what, apply execute
       // continue
@@ -242,16 +306,18 @@ const combat = (enemies, character) => {
     for (initCounter; initCounter > -5; initCounter--) {
       // console.log(initCounter);
       if (characterInit === initCounter) {
-        // player ui;
-        playerAttack(character, enemies[0]);
+        playerUI(character, enemies);
+        // playerAttack(character, enemies[0]);
         // after every attack:
         enemies = clearDead(enemies);
       }
       for (let m = 0; m < enemies.length; m++) {
         if (enemies[m].init === initCounter) {
-          enemyAttack(enemies[m], character);
-          if (character.tempHP <= 0) {
-            break;
+          for (let i = 0; i < enemies[m].numOfAtks; i++) {
+            enemyAttack(enemies[m], character);
+            if (character.tempHP <= 0) {
+              break;
+            }
           }
         }
       }
@@ -264,7 +330,7 @@ const combat = (enemies, character) => {
   checkWinner(character);
 };
 
-combat(genPop(1), blankCharacter);
+combat(genPop(0.5), blankCharacter);
 
 module.exports = {
   choosePool,
