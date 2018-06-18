@@ -4,6 +4,17 @@ const blankCharacter = {
   name: ' ',
   race: ' ',
   lvl: 1,
+  lvlBoolean: {
+    lvl2: false,
+    lvl3: false,
+    lvl4: false,
+    lvl5: false,
+    lvl6: false,
+    lvl7: false,
+    lvl8: false,
+    lvl9: false,
+    lvl10: false
+  },
   exp: 0,
   HP: 0,
   ATK: 0,
@@ -26,6 +37,7 @@ const blankCharacter = {
   proficiency: 2,
   AC: 0,
   init: 0,
+  numOfAttacks: 1,
   equipment: {
     armor: [
       {
@@ -45,7 +57,13 @@ const blankCharacter = {
         type: 'onehanded'
       }
     ],
-    shield: [],
+    shield: [
+      {
+        name: 'No Shield',
+        AC: 0,
+        price: 0
+      }
+    ],
     potion: [],
     ring: [],
     amulet: [],
