@@ -24,16 +24,14 @@ const createCharacter = () => {
 
   clear();
   design.sheetDesign(charSheet);
-  charSheet = chooseName(charSheet);
+  chooseName(charSheet);
 
   clear();
   design.sheetDesign(charSheet);
-  charSheet = chooseRace(charSheet);
-  charSheet = chooseAttributes(charSheet);
-  calculateHP(charSheet);
-  calculateInit(charSheet);
-  calculateATK(charSheet);
-  calculateAC(charSheet);
+  chooseRace(charSheet);
+  chooseAttributes(charSheet);
+
+  calculateStats(charSheet);
 
   saveChars(charSheet);
   return charSheet;
@@ -41,12 +39,12 @@ const createCharacter = () => {
 
 const chooseName = (charSheet) => {
   charSheet.name = readlineSync.question('Set Character Name: ');
-  return charSheet;
 };
 
 const chooseRace = (charSheet) => {
   let answers = ['Human (+1 To All Stats)', 'Elf (+2 Dexterity)', 'Dwarf (+2 Constitution)', 'Half-Orc (+2 Strength)'];
   let index = readlineSync.keyInSelect(answers, 'Choose Race: ', {cancel: false});
+
   if (index === 0) {
     charSheet.attributes.Str += 1;
     charSheet.attributes.Dex += 1;
@@ -65,15 +63,16 @@ const chooseRace = (charSheet) => {
     charSheet.attributes.Str += 2;
     charSheet.race = 'Half-Orc';
   }
-  return charSheet;
 };
 
 const chooseAttributes = (charSheet) => {
   let generatedAttributeList = dice.genAtr();
+
   let stats = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'];
   let stats2 = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma'];
   let index1 = 0;
   let index2 = 0;
+
   while (generatedAttributeList.length > 0) {
     clear();
     design.sheetDesign(charSheet);
@@ -84,29 +83,12 @@ const chooseAttributes = (charSheet) => {
     stats2.splice(index2, 1);
     modifierCalculator(charSheet);
   }
-  return charSheet;
-};
-
-const calculateHP = (charSheet) => {
-  charSheet.HP += (6 + charSheet.modifiers.ConMOD);
-  charSheet.tempHP = charSheet.HP;
-};
-
-const calculateInit = (charSheet) => {
-  charSheet.init = charSheet.modifiers.DexMOD;
-};
-
-const calculateATK = (charSheet) => {
-  charSheet.ATK = charSheet.modifiers.DexMOD + charSheet.proficiency;
-};
-
-const calculateAC = (charSheet) => {
-  charSheet.AC = charSheet.modifiers.DexMOD + 10;
 };
 
 const modifierCalculator = (character) => {
   let stats = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'];
   let statsMOD = ['StrMOD', 'DexMOD', 'ConMOD', 'IntMOD', 'WisMOD', 'ChaMOD'];
+
   for (let i = 0; i < stats.length; i++) {
     character.modifiers[statsMOD[i]] = character.attributes[stats[i]] > 10 ? Math.floor((character.attributes[stats[i]] - 10) / 2) : Math.ceil((character.attributes[stats[i]] - 10) / 2);
   }
@@ -132,14 +114,65 @@ const loadChars = () => {
   return JSON.parse(loadedSheet);
 };
 
+// STAT CALCULATION
+
+const calculateStats = (charSheet) => {
+  calculateHP(charSheet);
+  calculateInit(charSheet);
+  calculateATK(charSheet);
+  calculateAC(charSheet);
+};
+
+const calculateHP = (charSheet) => {
+  charSheet.HP = 4 + (6 + charSheet.modifiers.ConMOD) * charSheet.lvl;
+};
+
+const calculateInit = (charSheet) => {
+  charSheet.init = charSheet.modifiers.DexMOD;
+};
+
+const calculateATK = (charSheet) => {
+  let fromItems = 0;
+  if (charSheet.equipment.amulet.length > 0) {
+    fromItems += charSheet.equipment.amulet[0].ATK;
+  }
+  if (charSheet.equipment.ring.length > 0) {
+    fromItems += charSheet.equipment.ring[0].ATK;
+  }
+
+  charSheet.ATK = charSheet.modifiers.DexMOD + charSheet.proficiency + fromItems;
+};
+
+const calculateAC = (charSheet) => {
+  let fromItems = 0;
+  if (charSheet.equipment.amulet.length > 0) {
+    fromItems += charSheet.equipment.amulet[0].AC;
+  }
+  if (charSheet.equipment.ring.length > 0) {
+    fromItems += charSheet.equipment.ring[0].AC;
+  }
+  if (charSheet.equipment.armor.length > 0) {
+    fromItems += charSheet.equipment.armor[0].AC;
+  }
+  if (charSheet.equipment.shield.length > 0) {
+    fromItems += charSheet.equipment.shield[0].AC;
+  }
+
+  charSheet.AC = charSheet.modifiers.DexMOD + 10 + fromItems;
+};
+
 // CHARACTER MENU
 
 const characterMenu = (charSheet) => {
   while (true) {
+    calculateStats(charSheet);
+
     clear();
     design.sheetDesign(charSheet);
+
     let answers = ['Arena', 'Shop', 'Inventory'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Quit to Main Menu'});
+
     if (index === 0) {
       console.log('Enter Fight');
     } else if (index === 1) {
@@ -159,240 +192,105 @@ const shop = (charSheet) => {
   while (true) {
     clear();
     design.inventoryDesign(charSheet);
+
     let answers = ['Buy Armor', 'Buy Shield', 'Buy Weapon', 'Buy Potion', 'Buy Ring', 'Buy Amulet'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Exit from Shop'});
-    if (index === 0) {
-      shopArmor(charSheet);
-    } else if (index === 1) {
-      shopShield(charSheet);
-    } else if (index === 2) {
-      shopWeapon(charSheet);
-    } else if (index === 3) {
-      shopPotion(charSheet);
-    } else if (index === 4) {
-      shopRing(charSheet);
-    } else if (index === 5) {
-      shopAmulet(charSheet);
-    } else if (index === -1) {
+
+    if (index === -1) {
       break;
     }
+
+    shopAll(charSheet, index);
   }
 };
 
-const shopArmor = (charSheet) => {
+const shopAll = (charSheet, i) => {
+  let options = ['armor', 'shield', 'weapon', 'potion', 'ring', 'amulet'];
+  let itemsOptions = ['armorList', 'shieldList', 'weaponList', 'potionList', 'ringList', 'amuletList'];
+
   clear();
   design.inventoryDesign(charSheet);
 
-  let armorList = [];
-  items.armorList.forEach(item => {
-    armorList.push(`${item.name} | ${item.AC} AC | ${item.maxDexMod} max.Dex.mod. | ${item.price} gold`);
-  });
-  let indexArmor = readlineSync.keyInSelect(armorList, '', {cancel: 'Back'});
+  let list = [];
 
-  if (indexArmor === -1) {
+  items[itemsOptions[i]].forEach(item => {
+    if (i === 0 || i === 1) {
+      list.push(`${item.name} | ${item.AC} AC | ${item.price} gold`);
+    } else if (i === 2) {
+      list.push(`${item.name} | ${item.dmgDisplay} dmg | ${item.price} gold`);
+    } else if (i === 3) {
+      list.push(`${item.name} | ${item.healDisplay} HP | ${item.price} gold`);
+    } else if (i === 4 || i === 5) {
+      list.push(`${item.name} | ${item.AC} AC | ${item.ATK0} ATK | ${item.price} gold`);
+    }
+  });
+
+  let index = readlineSync.keyInSelect(list, '', {cancel: 'Back'});
+
+  if (index === -1) {
     return;
   }
 
   clear();
   design.inventoryDesign(charSheet);
 
-  if (items.armorList[indexArmor].price > charSheet.gold) {
+  if (items[itemsOptions[i]][index].price > charSheet.gold) {
     readlineSync.question('Not enough gold! Press enter to continue...');
   } else {
-    charSheet.gold -= items.armorList[indexArmor].price;
-    charSheet.equipment.backpack.armor.push(items.armorList[indexArmor]);
-  }
-};
-
-const shopShield = (charSheet) => {
-  clear();
-  design.inventoryDesign(charSheet);
-
-  let shieldList = [];
-  items.shieldList.forEach(item => {
-    shieldList.push(`${item.name} | ${item.AC} AC | ${item.price} gold`);
-  });
-  let indexShield = readlineSync.keyInSelect(shieldList, '', {cancel: 'Back'});
-
-  if (indexShield === -1) {
-    return;
-  }
-
-  clear();
-  design.inventoryDesign(charSheet);
-
-  if (items.shieldList[indexShield].price > charSheet.gold) {
-    readlineSync.question('Not enough gold! Press enter to continue...');
-  } else {
-    charSheet.gold -= items.shieldList[indexShield].price;
-    charSheet.equipment.backpack.shield.push(items.shieldList[indexShield]);
-  }
-};
-
-const shopWeapon = (charSheet) => {
-  clear();
-  design.inventoryDesign(charSheet);
-
-  let weaponList = [];
-  items.weaponList.forEach(item => {
-    weaponList.push(`${item.name} | ${item.dmgDisplay} dmg | ${item.price} gold`);
-  });
-  let indexWeapon = readlineSync.keyInSelect(weaponList, '', {cancel: 'Back'});
-
-  if (indexWeapon === -1) {
-    return;
-  }
-
-  clear();
-  design.inventoryDesign(charSheet);
-
-  if (items.weaponList[indexWeapon].price > charSheet.gold) {
-    readlineSync.question('Not enough gold! Press enter to continue...');
-  } else {
-    charSheet.gold -= items.weaponList[indexWeapon].price;
-    charSheet.equipment.backpack.weapon.push(items.weaponList[indexWeapon]);
-  }
-};
-
-const shopPotion = (charSheet) => {
-  clear();
-  design.inventoryDesign(charSheet);
-
-  let potionList = [];
-  items.potionList.forEach(item => {
-    potionList.push(`${item.name} | ${item.healDisplay} HP | ${item.price} gold`);
-  });
-  let indexPotion = readlineSync.keyInSelect(potionList, '', {cancel: 'Back'});
-
-  if (indexPotion === -1) {
-    return;
-  }
-
-  clear();
-  design.inventoryDesign(charSheet);
-
-  if (items.potionList[indexPotion].price > charSheet.gold) {
-    readlineSync.question('Not enough gold! Press enter to continue...');
-  } else {
-    charSheet.gold -= items.potionList[indexPotion].price;
-    charSheet.equipment.backpack.potion.push(items.potionList[indexPotion]);
-  }
-};
-
-const shopRing = (charSheet) => {
-  clear();
-  design.inventoryDesign(charSheet);
-
-  let ringList = [];
-  items.ringList.forEach(item => {
-    ringList.push(`${item.name} | ${item.AC} AC | ${item.ATK} ATK | ${item.price} gold`);
-  });
-  let indexRing = readlineSync.keyInSelect(ringList, '', {cancel: 'Back'});
-
-  if (indexRing === -1) {
-    return;
-  }
-
-  clear();
-  design.inventoryDesign(charSheet);
-
-  if (items.ringList[indexRing].price > charSheet.gold) {
-    readlineSync.question('Not enough gold! Press enter to continue...');
-  } else {
-    charSheet.gold -= items.ringList[indexRing].price;
-    charSheet.equipment.backpack.ring.push(items.ringList[indexRing]);
-  }
-};
-
-const shopAmulet = (charSheet) => {
-  clear();
-  design.inventoryDesign(charSheet);
-
-  let amuletList = [];
-  items.amuletList.forEach(item => {
-    amuletList.push(`${item.name} | ${item.AC} AC | ${item.ATK} ATK | ${item.price} gold`);
-  });
-  let indexAmulet = readlineSync.keyInSelect(amuletList, '', {cancel: 'Back'});
-
-  if (indexAmulet === -1) {
-    return;
-  }
-
-  clear();
-  design.inventoryDesign(charSheet);
-
-  if (items.amuletList[indexAmulet].price > charSheet.gold) {
-    readlineSync.question('Not enough gold! Press enter to continue...');
-  } else {
-    charSheet.gold -= items.amuletList[indexAmulet].price;
-    charSheet.equipment.backpack.amulet.push(items.amuletList[indexAmulet]);
+    charSheet.gold -= items[itemsOptions[i]][index].price;
+    charSheet.equipment.backpack[options[i]].push(items[itemsOptions[i]][index]);
   }
 };
 
 // INVENTORY
 
+// EGYSZERŰSÍTENI !!!!!!
 const inventory = (charSheet) => {
   while (true) {
     clear();
     design.inventoryDesign(charSheet);
+
     let answers = ['Equip Armor', 'Equip Shield', 'Equip Weapon', 'Equip Potion', 'Equip Ring', 'Equip Amulet'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Exit from Inventory'});
-    if (index === 0) {
-      equipArmor(charSheet);
-    } else if (index === 1) {
-      equipShield(charSheet);
-    } else if (index === 2) {
-    } else if (index === 3) {
-    } else if (index === 4) {
-    } else if (index === 5) {
-    } else if (index === -1) {
+
+    if (index === -1) {
       break;
     }
+
+    equipAll(charSheet, index);
   }
 };
 
-const equipArmor = (charSheet) => {
+const equipAll = (charSheet, i) => {
   clear();
   design.inventoryDesign(charSheet);
 
-  let equipListArmor = [];
-  charSheet.equipment.backpack.armor.forEach(element => {
-    equipListArmor.push(`${element.name} | ${element.AC} AC | ${element.maxDexMod} max.Dex.Mod`);
-  });
-  let indexArmor = readlineSync.keyInSelect(equipListArmor, '', {cancel: 'Back'});
+  let options = ['armor', 'shield', 'weapon', 'potion', 'ring', 'amulet'];
+  let list = [];
 
-  if (indexArmor === -1) {
+  charSheet.equipment.backpack[options[i]].forEach(element => {
+    if (i === 0 || i === 1) {
+      list.push(`${element.name} | ${element.AC} AC`);
+    } else if (i === 2) {
+      list.push(`${element.name} | ${element.dmgDisplay} dmg`);
+    } else if (i === 3) {
+      list.push(`${element.name} | ${element.healDisplay} HP`);
+    } else if (i === 4 || i === 5) {
+      list.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+    }
+  });
+  let index = readlineSync.keyInSelect(list, '', {cancel: 'Back'});
+
+  if (index === -1) {
     return;
   }
 
-  if (charSheet.equipment.armor.length > 0) {
-    charSheet.equipment.backpack.armor.push(charSheet.equipment.armor[0]);
-    charSheet.equipment.armor.splice(0, 1);
+  if (charSheet.equipment[options[i]].length > 0) {
+    charSheet.equipment.backpack[options[i]].push(charSheet.equipment[options[i]][0]);
+    charSheet.equipment[options[i]].splice(0, 1);
   }
-  charSheet.equipment.armor.push(charSheet.equipment.backpack.armor[indexArmor]);
-  charSheet.equipment.backpack.armor.splice(indexArmor, 1);
-};
-
-const equipShield = (charSheet) => {
-  clear();
-  design.inventoryDesign(charSheet);
-
-  let equipListShield = [];
-  charSheet.equipment.backpack.shield.forEach(element => {
-    equipListShield.push(`${element.name} | ${element.AC} AC`);
-  });
-  let indexShield = readlineSync.keyInSelect(equipListShield, '', {cancel: 'Back'});
-
-  if (indexShield === -1) {
-    return;
-  }
-
-  if (charSheet.equipment.shield.length > 0) {
-    charSheet.equipment.backpack.shield.push(charSheet.equipment.shield[0]);
-    charSheet.equipment.shield.splice(0, 1);
-  }
-  charSheet.equipment.shield.push(charSheet.equipment.backpack.shield[indexShield]);
-  charSheet.equipment.backpack.shield.splice(indexShield, 1);
+  charSheet.equipment[options[i]].push(charSheet.equipment.backpack[options[i]][index]);
+  charSheet.equipment.backpack[options[i]].splice(index, 1);
 };
 
 // EXPORT
@@ -404,5 +302,3 @@ module.exports = {
   loadChars,
   characterMenu
 };
-
-console.log();
