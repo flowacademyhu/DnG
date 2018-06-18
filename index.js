@@ -15,9 +15,11 @@ while (true) {
     }
   } else if (mainMenuIndex === 1) {
     let charSheet = functions.loadChars();
-    while (true) {
-      functions.characterMenu(charSheet);
-      break;
+    if (Object.keys(charSheet).length > 0) {
+      while (true) {
+        functions.characterMenu(charSheet);
+        break;
+      }
     }
   } else if (mainMenuIndex === -1) {
     clear();

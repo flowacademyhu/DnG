@@ -76,8 +76,10 @@ const chooseAttributes = (charSheet) => {
   while (generatedAttributeList.length > 0) {
     clear();
     design.sheetDesign(charSheet);
+
     index1 = readlineSync.keyInSelect(generatedAttributeList, 'Select value to distribute: ', {cancel: false});
     index2 = readlineSync.keyInSelect(stats2, 'Add the value to the following attribute: ', {cancel: false});
+
     charSheet.attributes[stats[index2]] += generatedAttributeList.splice(index1, 1)[0];
     stats.splice(index2, 1);
     stats2.splice(index2, 1);
@@ -108,6 +110,11 @@ const loadChars = () => {
     files.push(file);
   });
 
+  if (files.length === 0) {
+    readlineSync.question('No characters to load...');
+    return {};
+  }
+
   let index = readlineSync.keyInSelect(files, 'Load Character by Name: ', {cancel: false});
 
   let loadedSheet = fs.readFileSync(`./saved/${files[index]}`);
@@ -117,6 +124,9 @@ const loadChars = () => {
 // STAT CALCULATION
 
 const calculateStats = (charSheet) => {
+  levelUp(charSheet);
+  levels(charSheet);
+  modifierCalculator(charSheet);
   calculateHP(charSheet);
   calculateInit(charSheet);
   calculateATK(charSheet);
@@ -159,6 +169,86 @@ const calculateAC = (charSheet) => {
   }
 
   charSheet.AC = charSheet.modifiers.DexMOD + 10 + fromItems;
+};
+
+// LVL UP
+
+const levelUp = (charSheet) => {
+  if (charSheet.exp > 300 && charSheet.exp < 900) {
+    charSheet.lvl = 2;
+  } else if (charSheet.exp >= 900 && charSheet.exp < 2700) {
+    charSheet.lvl = 3;
+  } else if (charSheet.exp >= 2700 && charSheet.exp < 6500) {
+    charSheet.lvl = 4;
+  } else if (charSheet.exp >= 6500 && charSheet.exp < 14000) {
+    charSheet.lvl = 5;
+  } else if (charSheet.exp >= 14000 && charSheet.exp < 23000) {
+    charSheet.lvl = 6;
+  } else if (charSheet.exp >= 23000 && charSheet.exp < 34000) {
+    charSheet.lvl = 7;
+  } else if (charSheet.exp >= 34000 && charSheet.exp < 48000) {
+    charSheet.lvl = 8;
+  } else if (charSheet.exp >= 48000 && charSheet.exp < 64000) {
+    charSheet.lvl = 9;
+  } else if (charSheet.exp >= 64000) {
+    charSheet.lvl = 10;
+  }
+};
+
+const levels = (charSheet) => {
+  if (charSheet.lvl >= 2 && charSheet.lvlBoolean.lvl2 === false) {
+    charSheet.proficiency += 2;
+    charSheet.lvlBoolean.lvl2 = true;
+  }
+  if (charSheet.lvl >= 3 && charSheet.lvlBoolean.lvl3 === false) {
+    charSheet.proficiency += 2;
+    charSheet.lvlBoolean.lvl3 = true;
+  }
+  if (charSheet.lvl >= 4 && charSheet.lvlBoolean.lvl4 === false) {
+    charSheet.proficiency += 2;
+    distributeLvlUpPoints(charSheet, 2);
+    charSheet.lvlBoolean.lvl4 = true;
+  }
+  if (charSheet.lvl >= 5 && charSheet.lvlBoolean.lvl5 === false) {
+    charSheet.proficiency += 3;
+    charSheet.numberOfAttacks += 1;
+    charSheet.lvlBoolean.lvl5 = true;
+  }
+  if (charSheet.lvl >= 6 && charSheet.lvlBoolean.lvl6 === false) {
+    charSheet.proficiency += 3;
+    distributeLvlUpPoints(charSheet, 2);
+    charSheet.lvlBoolean.lvl6 = true;
+  }
+  if (charSheet.lvl >= 7 && charSheet.lvlBoolean.lvl7 === false) {
+    charSheet.proficiency += 3;
+    charSheet.lvlBoolean.lvl7 = true;
+  }
+  if (charSheet.lvl >= 8 && charSheet.lvlBoolean.lvl8 === false) {
+    charSheet.proficiency += 3;
+    distributeLvlUpPoints(charSheet, 2);
+    charSheet.lvlBoolean.lvl8 = true;
+  }
+  if (charSheet.lvl >= 9 && charSheet.lvlBoolean.lvl9 === false) {
+    charSheet.proficiency += 4;
+    charSheet.lvlBoolean.lvl9 = true;
+  }
+  if (charSheet.lvl >= 10 && charSheet.lvlBoolean.lvl10 === false) {
+    charSheet.proficiency += 4;
+    charSheet.lvlBoolean.lvl10 = true;
+  }
+};
+
+const distributeLvlUpPoints = (charSheet, i) => {
+  let stats = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'];
+  let stats2 = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma'];
+
+  for (i; i > 0; i--) {
+    clear();
+    design.sheetDesign(charSheet);
+
+    let index = readlineSync.keyInSelect(stats2, `You have ${i} points to distribute:`, {cancel: false});
+    charSheet.attributes[stats[index]] += 1;
+  }
 };
 
 // CHARACTER MENU
@@ -244,7 +334,6 @@ const shopAll = (charSheet, i) => {
 
 // INVENTORY
 
-// EGYSZERŰSÍTENI !!!!!!
 const inventory = (charSheet) => {
   while (true) {
     clear();
@@ -268,29 +357,58 @@ const equipAll = (charSheet, i) => {
   let options = ['armor', 'shield', 'weapon', 'potion', 'ring', 'amulet'];
   let list = [];
 
-  charSheet.equipment.backpack[options[i]].forEach(element => {
-    if (i === 0 || i === 1) {
-      list.push(`${element.name} | ${element.AC} AC`);
-    } else if (i === 2) {
-      list.push(`${element.name} | ${element.dmgDisplay} dmg`);
-    } else if (i === 3) {
-      list.push(`${element.name} | ${element.healDisplay} HP`);
-    } else if (i === 4 || i === 5) {
-      list.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+  if (charSheet.equipment.backpack[options[i]].length > 0) {
+    charSheet.equipment.backpack[options[i]].forEach(element => {
+      if (i === 0 || i === 1) {
+        list.push(`${element.name} | ${element.AC} AC`);
+      } else if (i === 2) {
+        list.push(`${element.name} | ${element.dmgDisplay} dmg`);
+      } else if (i === 3) {
+        list.push(`${element.name} | ${element.healDisplay} HP`);
+      } else if (i === 4 || i === 5) {
+        list.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+      }
+    });
+    let index = readlineSync.keyInSelect(list, '', {cancel: 'Back'});
+
+    if (index === -1) {
+      return;
     }
-  });
-  let index = readlineSync.keyInSelect(list, '', {cancel: 'Back'});
 
-  if (index === -1) {
-    return;
-  }
+    if (i === 1 && charSheet.equipment.weapon[0].type === 'twohanded' && charSheet.equipment.backpack[options[i]][index].name !== 'No Shield') {
+      clear();
+      design.inventoryDesign(charSheet);
 
-  if (charSheet.equipment[options[i]].length > 0) {
-    charSheet.equipment.backpack[options[i]].push(charSheet.equipment[options[i]][0]);
-    charSheet.equipment[options[i]].splice(0, 1);
+      readlineSync.question('You cannot equip shields with two-handed weapons...');
+      return;
+    }
+
+    if (i === 2 && charSheet.equipment.backpack[options[i]][index].type === 'twohanded' && charSheet.equipment.shield[0].name !== 'No Shield') {
+      clear();
+      design.inventoryDesign(charSheet);
+
+      readlineSync.question('You cannot equip two-handed weapons with shields... (Equip No Shield)');
+      return;
+    }
+
+    if (i === 3) {
+      if (charSheet.equipment[options[i]].length > 2) {
+        charSheet.equipment.backpack[options[i]].push(charSheet.equipment[options[i]][0]);
+        charSheet.equipment[options[i]].splice(0, 1);
+      }
+      charSheet.equipment[options[i]].push(charSheet.equipment.backpack[options[i]][index]);
+      charSheet.equipment.backpack[options[i]].splice(index, 1);
+    } else {
+      if (charSheet.equipment[options[i]].length > 0) {
+        charSheet.equipment.backpack[options[i]].push(charSheet.equipment[options[i]][0]);
+        charSheet.equipment[options[i]].splice(0, 1);
+      }
+      charSheet.equipment[options[i]].push(charSheet.equipment.backpack[options[i]][index]);
+      charSheet.equipment.backpack[options[i]].splice(index, 1);
+    }
+  } else {
+    readlineSync.question('0 items of this type...');
   }
-  charSheet.equipment[options[i]].push(charSheet.equipment.backpack[options[i]][index]);
-  charSheet.equipment.backpack[options[i]].splice(index, 1);
 };
 
 // EXPORT

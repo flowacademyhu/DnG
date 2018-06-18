@@ -82,6 +82,20 @@ const weaponList = [
     dmg: dice.roll(1, 8),
     price: 40,
     type: 'onehanded'
+  },
+  {
+    name: 'Greatsword',
+    dmgDisplay: '2-12',
+    dmg: dice.roll(2, 6),
+    price: 200,
+    type: 'twohanded'
+  },
+  {
+    name: 'Greataxe',
+    dmgDisplay: '1-12',
+    dmg: dice.roll(1, 12),
+    price: 120,
+    type: 'twohanded'
   }
 ];
 
