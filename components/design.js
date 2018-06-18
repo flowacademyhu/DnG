@@ -24,18 +24,20 @@ const logo = () => {
   console.log('   ▐                 ▐        ▐       ▐         ▐                                    ');
 };
 
+// SHEET DESIGN
+
 const sheetDesign = (charSheet) => {
   let designTable = [
     ['Level:', charSheet.lvl, 'Experience:', charSheet.exp, 'Name:', charSheet.name],
-    ['Health:', charSheet.HP, 'Temporal HP:', charSheet.tempHP, 'Race:', charSheet.race],
+    ['Health:', charSheet.HP, ' ', ' ', 'Race:', charSheet.race],
     ['AC:', charSheet.AC, 'Init:', charSheet.init, 'Gold:', charSheet.gold],
-    ['Prof:', charSheet.proficiency, 'ATK:', charSheet.ATK, 'Armor:', charSheet.equipment.armor[0].name],
-    ['Strength (Str):', charSheet.attributes.Str, 'Str Modifier:', charSheet.modifiers.StrMOD, 'Weapon/Shield:', `${charSheet.equipment.weapon[0].name} | ${charSheet.equipment.shield[0].name}`],
-    ['Dexterity (Dex):', charSheet.attributes.Dex, 'Dex Modifier:', charSheet.modifiers.DexMOD, 'Ring:', charSheet.equipment.ring],
-    ['Constitution (Con):', charSheet.attributes.Con, 'Con Modifier:', charSheet.modifiers.ConMOD, 'Amulet:', charSheet.equipment.amulet],
-    ['Intelligence (Int):', charSheet.attributes.Int, 'Int Modifier:', charSheet.modifiers.IntMOD, 'Pocket Slot 1:', charSheet.equipment.potion[0]],
-    ['Wisdom (Wis):', charSheet.attributes.Wis, 'Wis Modifier:', charSheet.modifiers.WisMOD, 'Pocket Slot 2:', charSheet.equipment.potion[1]],
-    ['Charisma (Cha):', charSheet.attributes.Cha, 'Cha Modifier:', charSheet.modifiers.ChaMOD, 'Pocket Slot 3:', charSheet.equipment.potion[2]]
+    ['Prof:', charSheet.proficiency, 'ATK:', charSheet.ATK, 'Armor:', show(charSheet, 0, 0)],
+    ['Strength (Str):', charSheet.attributes.Str, 'Str Modifier:', charSheet.modifiers.StrMOD, 'Weapon/Shield:', `${show(charSheet, 1, 0)}/${show(charSheet, 2, 0)}`],
+    ['Dexterity (Dex):', charSheet.attributes.Dex, 'Dex Modifier:', charSheet.modifiers.DexMOD, 'Ring:', show(charSheet, 3, 0)],
+    ['Constitution (Con):', charSheet.attributes.Con, 'Con Modifier:', charSheet.modifiers.ConMOD, 'Amulet:', show(charSheet, 4, 0)],
+    ['Intelligence (Int):', charSheet.attributes.Int, 'Int Modifier:', charSheet.modifiers.IntMOD, 'Pocket Slot 1:', show(charSheet, 5, 0)],
+    ['Wisdom (Wis):', charSheet.attributes.Wis, 'Wis Modifier:', charSheet.modifiers.WisMOD, 'Pocket Slot 2:', show(charSheet, 5, 1)],
+    ['Charisma (Cha):', charSheet.attributes.Cha, 'Cha Modifier:', charSheet.modifiers.ChaMOD, 'Pocket Slot 3:', show(charSheet, 5, 2)]
   ];
 
   let config = {
@@ -70,30 +72,35 @@ const sheetDesign = (charSheet) => {
   console.log(table(designTable, config));
 };
 
-const inventoryDesign = (charSheet) => {
-  let backpackListArmor = backpackArmor(charSheet);
-  let backpackListWeapon = backpackWeapon(charSheet);
-  let backpackListShield = backpackShield(charSheet);
-  let backpackListPotion = backpackPotion(charSheet);
-  let backpackListRing = backpackRing(charSheet);
-  let backpackListAmulet = backpackAmulet(charSheet);
+const show = (charSheet, i, j) => {
+  let list = ['armor', 'weapon', 'shield', 'ring', 'amulet', 'potion'];
 
+  if (charSheet.equipment[list[i]].length > 0) {
+    return charSheet.equipment[list[i]][j].name;
+  } else {
+    return '-';
+  }
+};
+
+// INVENTORY DESIGN
+
+const inventoryDesign = (charSheet) => {
   let designTable = [
     [' ', `Gold:`, charSheet.gold, ' '],
     [' ', 'Armors:', 'Shields:', 'Weapons:'],
-    [' ', backpackListArmor[0], backpackListShield[0], backpackListWeapon[0]],
-    [' ', backpackListArmor[1], backpackListShield[1], backpackListWeapon[1]],
-    [' ', backpackListArmor[2], backpackListShield[2], backpackListWeapon[2]],
-    [' ', backpackListArmor[3], backpackListShield[3], backpackListWeapon[3]],
-    [' ', backpackListArmor[4], backpackListShield[4], backpackListWeapon[4]],
-    [' ', backpackListArmor[5], backpackListShield[5], backpackListWeapon[5]],
+    [' ', backpackAll(charSheet, 0)[0], backpackAll(charSheet, 1)[0], backpackAll(charSheet, 2)[0]],
+    [' ', backpackAll(charSheet, 0)[1], backpackAll(charSheet, 1)[1], backpackAll(charSheet, 2)[1]],
+    [' ', backpackAll(charSheet, 0)[2], backpackAll(charSheet, 1)[2], backpackAll(charSheet, 2)[2]],
+    [' ', backpackAll(charSheet, 0)[3], backpackAll(charSheet, 1)[3], backpackAll(charSheet, 2)[3]],
+    [' ', backpackAll(charSheet, 0)[4], backpackAll(charSheet, 1)[4], backpackAll(charSheet, 2)[4]],
+    [' ', backpackAll(charSheet, 0)[5], backpackAll(charSheet, 1)[5], backpackAll(charSheet, 2)[5]],
     [' ', 'Potions:', 'Rings:', 'Amulets:'],
-    [' ', backpackListPotion[0], backpackListRing[0], backpackListAmulet[0]],
-    [' ', backpackListPotion[1], backpackListRing[1], backpackListAmulet[1]],
-    [' ', backpackListPotion[2], backpackListRing[2], backpackListAmulet[2]],
-    [' ', backpackListPotion[3], backpackListRing[3], backpackListAmulet[3]],
-    [' ', backpackListPotion[4], backpackListRing[4], backpackListAmulet[4]],
-    [' ', backpackListPotion[5], backpackListRing[5], backpackListAmulet[5]]
+    [' ', backpackAll(charSheet, 3)[0], backpackAll(charSheet, 4)[0], backpackAll(charSheet, 5)[0]],
+    [' ', backpackAll(charSheet, 3)[1], backpackAll(charSheet, 4)[1], backpackAll(charSheet, 5)[1]],
+    [' ', backpackAll(charSheet, 3)[2], backpackAll(charSheet, 4)[2], backpackAll(charSheet, 5)[2]],
+    [' ', backpackAll(charSheet, 3)[3], backpackAll(charSheet, 4)[3], backpackAll(charSheet, 5)[3]],
+    [' ', backpackAll(charSheet, 3)[4], backpackAll(charSheet, 4)[4], backpackAll(charSheet, 5)[4]],
+    [' ', backpackAll(charSheet, 3)[5], backpackAll(charSheet, 4)[5], backpackAll(charSheet, 5)[5]]
   ];
 
   let config = {
@@ -116,94 +123,38 @@ const inventoryDesign = (charSheet) => {
   console.log(table(designTable, config));
 };
 
-const backpackArmor = (charSheet) => {
-  let backpackListArmor = [];
+const backpackAll = (charSheet, i) => {
+  let choice = ['armor', 'shield', 'weapon', 'potion', 'ring', 'amulet'];
 
-  if (charSheet.equipment.armor.length > 0) {
-    backpackListArmor.push(`[X] ${charSheet.equipment.armor[0].name} | ${charSheet.equipment.armor[0].AC} AC | ${charSheet.equipment.armor[0].maxDexMod} max.Dex.Mod.`);
+  let list = [];
+
+  if (charSheet.equipment[choice[i]].length > 0) {
+    if (i === 0 || i === 1) {
+      list.push(`[X] ${charSheet.equipment[choice[i]][0].name} | ${charSheet.equipment[choice[i]][0].AC} AC`);
+    } else if (i === 2) {
+      list.push(`[X] ${charSheet.equipment[choice[i]][0].name} | ${charSheet.equipment[choice[i]][0].dmgDisplay} dmg`);
+    } else if (i === 3) {
+      charSheet.equipment[choice[i]].forEach(element => {
+        list.push(`[X] ${element.name} | ${element.healDisplay} HP`);
+      });
+    } else if (i === 4 || i === 5) {
+      list.push(`[X] ${charSheet.equipment[choice[i]][0].name} | ${charSheet.equipment[choice[i]][0].AC} AC | ${charSheet.equipment[choice[i]][0].ATK} ATK`);
+    }
   }
 
-  charSheet.equipment.backpack.armor.forEach(element => {
-    backpackListArmor.push(`${element.name} | ${element.AC} AC | ${element.maxDexMod} max.Dex.Mod`);
+  charSheet.equipment.backpack[choice[i]].forEach(element => {
+    if (i === 0 || i === 1) {
+      list.push(`${element.name} | ${element.AC} AC`);
+    } else if (i === 2) {
+      list.push(`${element.name} | ${element.dmgDisplay} dmg`);
+    } else if (i === 3) {
+      list.push(`${element.name} | ${element.healDisplay} HP`);
+    } else if (i === 4 || i === 5) {
+      list.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
+    }
   });
 
-  return backpackListArmor;
-};
-
-const backpackShield = (charSheet) => {
-  let backpackListShield = [];
-
-  if (charSheet.equipment.shield.length > 0) {
-    backpackListShield.push(`[X] ${charSheet.equipment.shield[0].name} | ${charSheet.equipment.shield[0].AC} AC`);
-  }
-
-  charSheet.equipment.backpack.shield.forEach(element => {
-    backpackListShield.push(`${element.name} | ${element.AC} AC`);
-  });
-
-  return backpackListShield;
-};
-
-const backpackWeapon = (charSheet) => {
-  let backpackListWeapon = [];
-
-  if (charSheet.equipment.weapon.length > 0) {
-    backpackListWeapon.push(`[X] ${charSheet.equipment.weapon[0].name} | ${charSheet.equipment.weapon[0].dmgDisplay} dmg`);
-  }
-
-  charSheet.equipment.backpack.weapon.forEach(element => {
-    backpackListWeapon.push(`${element.name} | ${element.dmgDisplay} dmg `);
-  });
-
-  return backpackListWeapon;
-};
-
-const backpackPotion = (charSheet) => {
-  let backpackListPotion = [];
-
-  if (charSheet.equipment.potion.length > 0) {
-    charSheet.equipment.potion.forEach(element => {
-      backpackListPotion.push(`[X] ${element.name} | ${element.healDisplay} HP`);
-    });
-  }
-
-  charSheet.equipment.backpack.potion.forEach(element => {
-    backpackListPotion.push(`${element.name} | ${element.healDisplay} HP `);
-  });
-
-  return backpackListPotion;
-};
-
-const backpackRing = (charSheet) => {
-  let backpackListRing = [];
-
-  if (charSheet.equipment.ring.length > 0) {
-    charSheet.equipment.ring.forEach(element => {
-      backpackListRing.push(`[X] ${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
-    });
-  }
-
-  charSheet.equipment.backpack.ring.forEach(element => {
-    backpackListRing.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
-  });
-
-  return backpackListRing;
-};
-
-const backpackAmulet = (charSheet) => {
-  let backpackListAmulet = [];
-
-  if (charSheet.equipment.amulet.length > 0) {
-    charSheet.equipment.amulet.forEach(element => {
-      backpackListAmulet.push(`[X] ${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
-    });
-  }
-
-  charSheet.equipment.backpack.amulet.forEach(element => {
-    backpackListAmulet.push(`${element.name} | ${element.AC} AC | ${element.ATK} ATK`);
-  });
-
-  return backpackListAmulet;
+  return list;
 };
 
 module.exports = {

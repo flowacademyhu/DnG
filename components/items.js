@@ -4,61 +4,41 @@ const armorList = [
   {
     name: 'Leather',
     AC: 1,
-    maxDexMod: 5,
-    price: 20
+    price: 100
   },
   {
     name: 'Studded Leather',
     AC: 2,
-    maxDexMod: 5,
-    price: 90
-  },
-  {
-    name: 'Hide',
-    AC: 2,
-    maxDexMod: 2,
-    price: 20
+    price: 200
   },
   {
     name: 'Chain shirt',
     AC: 3,
-    maxDexMod: 2,
-    price: 100
+    price: 400
   },
   {
     name: 'Breastplate',
     AC: 4,
-    maxDexMod: 2,
-    price: 800
+    price: 600
   },
   {
     name: 'Half Plate',
     AC: 5,
-    maxDexMod: 2,
-    price: 1500
-  },
-  {
-    name: 'Ring mail',
-    AC: 4,
-    maxDexMod: 0,
-    price: 60
+    price: 1000
   },
   {
     name: 'Chain mail',
     AC: 6,
-    maxDexMod: 0,
-    price: 150
+    price: 1500
   },
   {
     name: 'Splint',
     AC: 7,
-    maxDexMod: 0,
-    price: 400
+    price: 2000
   },
   {
     name: 'Plate',
     AC: 8,
-    maxDexMod: 0,
     price: 3000
   }
 ];
