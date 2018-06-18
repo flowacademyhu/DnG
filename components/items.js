@@ -104,19 +104,25 @@ const potionList = [
     name: 'Small HP potion',
     price: 20,
     healDisplay: '3-10',
-    heal: dice.roll(1, 8) + 2
+    heal: () => {
+      return dice.roll(1, 8) + 2;
+    }
   },
   {
     name: 'Medium HP potion',
     price: 80,
     healDisplay: '4-18',
-    heal: dice.roll(2, 8) + 2
+    heal: () => {
+      return dice.roll(2, 8) + 2;
+    }
   },
   {
     name: 'Great HP potion',
     price: 120,
     healDisplay: '8-22',
-    heal: dice.roll(2, 8) + 6
+    heal: () => {
+      return dice.roll(2, 8) + 6;
+    }
   }
 ];
 

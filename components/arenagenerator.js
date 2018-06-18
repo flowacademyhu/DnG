@@ -1,6 +1,7 @@
 const dice = require('./dice');
 const monsters = require('./monsters');
 const clone = require('clone');
+const readlineSync = require('readline-sync');
 
 // basicly works but there is some problem with, the random generator.
 // A lvl input and difficulty is needed and maybe full charsheet.
@@ -26,7 +27,7 @@ const sumCR = (difficulty, lvl) => {
   return sumCR;
 };
 
-// Take random monster from type till CR === Monsters CR; Every monster sould make random vals.
+// Take random monster from type till CR === Monsters CR; gen INIT and HP
 const genPop = (sumCR) => {
   let population = [];
   let type = choosePool();
@@ -35,11 +36,13 @@ const genPop = (sumCR) => {
   let remCR = sumCR;
 
   for (let i = 0; i < 8; i++) {
-    // pick a monster object from list, clone and add to pop
+    // pick a monster object from list, clone and add to pop, after monster expansion put remCR crit down to 1.5
     monster = type.filter(monster => monster.CR <= remCR);
+    monster = monster.filter(monster => monster.CR >= remCR - 4);
     population[i] = clone(monster[dice.randomIndex(monster)]);
-    // generate fix HP
+    // generate fix HP and Initiative
     population[i].HP = population[i].HP();
+    population[i].init = dice.roll(1, 20) + population[i].init;
 
     if (population[i] === undefined) {
       break;
@@ -48,15 +51,294 @@ const genPop = (sumCR) => {
     popCR += population[i].CR;
     remCR = sumCR - popCR;
 
-    if (popCR === sumCR || popCR > sumCR) {
+    if (popCR >= sumCR) {
       break;
     }
   }
   return population;
 };
 
+// In progress combat sys and test, dont forget to remove blankchar and ref.:
+
+const blankCharacter = {
+  name: 'JATEKOS',
+  race: 'EMBER',
+  lvl: 5,
+  exp: 0,
+  HP: 60,
+  tempHP: 60,
+  ATK: 2,
+  attributes: {
+    Str: 3,
+    Dex: 3,
+    Con: 2,
+    Int: 2,
+    Wis: 2,
+    Cha: 1
+  },
+  modifiers: {
+    StrMOD: 3,
+    DexMOD: 3,
+    ConMOD: 2,
+    IntMOD: 3,
+    WisMOD: 3,
+    ChaMOD: 3
+  },
+  proficiency: 2,
+  AC: 15,
+  init: 3,
+  numOfAtks: 4,
+  equipment: {
+    armor: [
+      {
+        name: 'Rugs',
+        AC: 2,
+        maxDexMod: 8,
+        reqStr: 0,
+        price: 0
+      }
+    ],
+    weapon: [
+      {
+        name: 'Sword',
+        dmgDisplay: '1-10',
+        dmg: () => {
+          return dice.roll(1, 10) + blankCharacter.modifiers.StrMOD;
+        },
+        price: 5,
+        type: 'onehanded'
+      }
+    ],
+    shield: [],
+    potion: [
+      {
+        name: 'Medium HP potion',
+        price: 80,
+        healDisplay: '4-18',
+        heal: () => {
+          return dice.roll(2, 8) + 2;
+        }
+      },
+      {
+        name: 'Small HP potion',
+        price: 20,
+        healDisplay: '3-10',
+        heal: () => {
+          return dice.roll(1, 8) + 2;
+        }
+      }
+    ],
+    ring: [],
+    amulet: [],
+    backpack: {
+      armor: [],
+      shield: [],
+      weapon: [],
+      potion: [],
+      ring: [],
+      amulet: []
+    }
+  },
+  gold: 0
+};
+
+// console.log(blankCharacter.tempHP());
+
+const remainingHPOfGenPop = (genPop) => {
+  let remainingHP = 0;
+  for (let i = 0; i < genPop.length; i++) {
+    if (genPop[i].HP >= 0) {
+      remainingHP += genPop[i].HP;
+    }
+  }
+  return remainingHP;
+};
+
+// Player attacks and dmgs enemy.
+const playerAttack = (player, enemy) => {
+  let attackRoll = dice.roll(1, 20);
+  let dmg = player.equipment.weapon[0].dmg() + player.modifiers.StrMOD;
+  if (player.ATK + attackRoll >= enemy.AC && attackRoll === 20) {
+    enemy.HP -= dmg * 2;
+    if (enemy.HP <= 0) {
+      return console.log('CRIT! You caused: ' + dmg * 2 + ' dmg to the ' + enemy.name + ' and killed it.');
+    }
+    return console.log('CRIT! You caused: ' + dmg * 2 + ' dmg to the ' + enemy.name + '.');
+  } else if (player.ATK + attackRoll >= enemy.AC) {
+    enemy.HP -= dmg;
+    if (enemy.HP <= 0) {
+      return console.log('HIT! You caused: ' + dmg + ' dmg to the ' + enemy.name + ' and killed it.');
+    }
+    return console.log('HIT! You caused: ' + dmg + ' dmg to the ' + enemy.name + '.');
+  } else {
+    return console.log('MISS!');
+  }
+};
+
+// Enemy attacks and dmgs player.
+const enemyAttack = (enemy, player) => {
+  let attackRoll = dice.roll(1, 20);
+  let dmg = enemy.dmg();
+
+  if (enemy.atkMod + attackRoll >= player.AC && attackRoll === 20) {
+    player.tempHP -= dmg * 2;
+    if (player.tempHP <= 0) {
+      return console.log('CRIT! You suffered: ' + dmg * 2 + ' dmg from the ' + enemy.name + ' and fall unconscious.');
+    }
+    return console.log('CRIT! You suffered: ' + dmg * 2 + ' dmg from the ' + enemy.name + '.');
+  } else if (enemy.atkMod + attackRoll >= player.AC) {
+    player.tempHP -= dmg;
+    if (player.tempHP <= 0) {
+      return console.log('HIT! You suffered: ' + dmg + ' dmg from the ' + enemy.name + ' and fall unconscious.');
+    }
+    return console.log('HIT! You suffered: ' + dmg + ' dmg from the ' + enemy.name + '.');
+  } else {
+    return console.log('MISS! The ' + enemy.name + ' failed to hit you.');
+  }
+};
+
+// Clear dead enemies from list
+const clearDead = (enemies) => {
+  for (let m = 0; m < enemies.length; m++) {
+    if (enemies[m].HP <= 0) {
+      enemies.splice(m, 1);
+    }
+  }
+  return enemies;
+};
+
+const makeChoiceOfEnemies = (enemies) => {
+  let choices = [];
+  for (let m = 0; m < enemies.length; m++) {
+    choices[m] = enemies[m].name + ' HP: ' + enemies[m].HP;
+  }
+  return choices;
+};
+
+const makeChoiceOfPotion = (player) => {
+  let choices = [];
+  for (let m = 0; m < player.equipment.potion.length; m++) {
+    choices[m] = player.equipment.potion[m].name + ' Heals: ' + player.equipment.potion[m].healDisplay;
+  }
+  return choices;
+};
+
+// drink, remove potion
+const drinkPotion = (player, potion, indexOfPotion) => {
+  let healedHP = potion.heal();
+  console.log('The potion healed: ' + healedHP + ' HP');
+  player.tempHP += healedHP;
+  if (player.tempHP > player.HP) {
+    player.tempHP = player.HP;
+  }
+  player.equipment.potion.splice(indexOfPotion, 1);
+  console.log('Your HP now: ' + player.tempHP);
+};
+
+// in case its players turn...
+const playerUI = (player, enemies) => {
+  while (true) {
+    let answers = ['Attack', 'Drink Potion', 'Special'];
+    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Do nothing'});
+
+    if (index === 0) {
+      for (let i = 0; i < player.numOfAtks; i++) {
+        let answers = makeChoiceOfEnemies(enemies);
+        let whoToAttack = readlineSync.keyInSelect(answers, 'Who do you want to attack?', {cancel: 'Cancel'});
+        playerAttack(player, enemies[whoToAttack]);
+        enemies = clearDead(enemies);
+        if (enemies[0] === undefined) {
+          console.log('All enemies have been defeated!');
+          break;
+        }
+      }
+      break;
+    } else if (index === 1) {
+      let answers = makeChoiceOfPotion(player);
+      console.log(makeChoiceOfPotion(player));
+      if (answers[0] === undefined) {
+        console.log('You do not have any potions left');
+        continue;
+      }
+      let whatToDrink = readlineSync.keyInSelect(answers, 'Drink:', {cancel: 'Cancel'});
+      drinkPotion(player, player.equipment.potion[whatToDrink], whatToDrink);
+      continue;
+    } else if (index === 2) {
+      // what, apply execute
+      // continue
+    } else {
+      break;
+    }
+  }
+};
+// console.log(index);
+
+// let x = genPop(5);
+
+// console.log(x);
+// playerAttack(blankCharacter, x[0]);
+// playerAttack(blankCharacter, x[0]);
+
+const checkWinner = (character) => {
+  if (character.tempHP > 0) {
+    console.log('You are victorious!');
+    character.exp += 100;
+    character.gold += 100;
+    // winnings
+  } else {
+    console.log('You have been defeated!');
+    character.exp += 50;
+    character.gold += 0;
+  }
+};
+
+const combat = (enemies, character) => {
+  let characterInit = character.init + dice.roll(1, 20);
+  console.log('CharacterInit =', characterInit);
+  let turnCounter = 1;
+  console.log('enemies:', enemies);
+  console.log('starting HP of player: ' + character.tempHP + ' starting HP of enemies: ' + remainingHPOfGenPop(enemies));
+  // check death
+
+  while (character.tempHP > 0 && remainingHPOfGenPop(enemies) > 0) {
+    let initCounter = 30;
+    console.log('Turn:', turnCounter);
+    for (initCounter; initCounter > -5; initCounter--) {
+      // console.log(initCounter);
+      if (characterInit === initCounter) {
+        playerUI(character, enemies);
+        // playerAttack(character, enemies[0]);
+        // after every attack:
+        enemies = clearDead(enemies);
+      }
+      for (let m = 0; m < enemies.length; m++) {
+        if (enemies[m].init === initCounter) {
+          for (let i = 0; i < enemies[m].numOfAtks; i++) {
+            enemyAttack(enemies[m], character);
+            if (character.tempHP <= 0) {
+              break;
+            }
+          }
+        }
+      }
+      if (character.tempHP <= 0) {
+        break;
+      }
+    }
+    turnCounter += 1;
+  }
+  checkWinner(character);
+};
+
+combat(genPop(0.5), blankCharacter);
+
 module.exports = {
   choosePool,
   sumCR,
-  genPop
+  genPop,
+  clearDead,
+  remainingHPOfGenPop,
+  playerAttack,
+  enemyAttack,
+  playerUI
 };
