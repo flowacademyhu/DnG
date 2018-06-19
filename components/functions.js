@@ -311,7 +311,7 @@ const shopAll = (charSheet, i) => {
     } else if (i === 3) {
       list.push(`${item.name} | ${item.healDisplay} HP | ${item.price} gold`);
     } else if (i === 4 || i === 5) {
-      list.push(`${item.name} | ${item.AC} AC | ${item.ATK0} ATK | ${item.price} gold`);
+      list.push(`${item.name} | ${item.AC} AC | ${item.ATK} ATK | ${item.price} gold`);
     }
   });
 
