@@ -3,8 +3,7 @@ const monsters = require('./monsters');
 const clone = require('clone');
 const readlineSync = require('readline-sync');
 
-// basicly works but there is some problem with, the random generator.
-// A lvl input and difficulty is needed and maybe full charsheet.
+// A lvl input and difficulty is needed and full charsheet. At the end has to save charSheet
 // Difficulty: integer 1-3
 
 // Choose a random group of enemies.
@@ -103,7 +102,7 @@ const blankCharacter = {
         name: 'Sword',
         dmgDisplay: '1-10',
         dmg: () => {
-          return dice.roll(1, 10) + blankCharacter.modifiers.StrMOD;
+          return dice.roll(1, 10);
         },
         price: 5,
         type: 'onehanded'
@@ -141,8 +140,6 @@ const blankCharacter = {
   },
   gold: 0
 };
-
-// console.log(blankCharacter.tempHP());
 
 const remainingHPOfGenPop = (genPop) => {
   let remainingHP = 0;
@@ -271,13 +268,6 @@ const playerUI = (player, enemies) => {
     }
   }
 };
-// console.log(index);
-
-// let x = genPop(5);
-
-// console.log(x);
-// playerAttack(blankCharacter, x[0]);
-// playerAttack(blankCharacter, x[0]);
 
 const checkWinner = (character) => {
   if (character.tempHP > 0) {
