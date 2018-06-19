@@ -74,9 +74,9 @@ let blankCharacter = {
   race: 'EMBER',
   lvl: 1,
   exp: 0,
-  HP: 60,
-  tempHP: 60,
-  ATK: 2,
+  HP: 100,
+  tempHP: 100,
+  ATK: 3,
   attributes: {
     Str: 3,
     Dex: 3,
@@ -96,9 +96,9 @@ let blankCharacter = {
   proficiency: 2,
   AC: 15,
   init: 3,
-  numOfAtks: 4,
-  secondWind: 1,
-  actionSurge: 0,
+  numOfAtks: 2,
+  secondWind: 2,
+  actionSurge: 2,
   equipment: {
     armor: [
       {
@@ -144,10 +144,15 @@ let blankCharacter = {
   gold: 0
 };
 
-// items load methodes.
+// items load methods.
 const characterLoader = (character) => {
-  character.actionSurgeCounter = clone(character.actionSurge);
-  character.secondWindCounter = clone(character.secondWind);
+  character.specials = [{}, {}];
+  character.specials[0].name = 'Action Surge';
+  character.specials[0].counter = clone(character.actionSurge);
+  character.specials[0].description = ' (Doubles your number of attacks for this turn.) Use(s) left: ';
+  character.specials[1].name = 'Second Wind';
+  character.specials[1].counter = clone(character.secondWind);
+  character.specials[1].description = ' (Restores 1d10 + level HP) Use(s) left: ';
 
   let i = 0;
   let j = 0;
@@ -195,7 +200,7 @@ const playerAttack = (player, enemy) => {
     }
     return console.log('HIT! You caused: ' + dmg + ' dmg to the ' + enemy.name + '.');
   } else {
-    return console.log('MISS!');
+    return console.log('MISS! You missed the ' + enemy.name + '.');
   }
 };
 
@@ -207,17 +212,17 @@ const enemyAttack = (enemy, player) => {
   if (enemy.atkMod + attackRoll >= player.AC && attackRoll === 20) {
     player.tempHP -= dmg * 2;
     if (player.tempHP <= 0) {
-      return console.log('CRIT! You suffered: ' + dmg * 2 + ' dmg from the ' + enemy.name + ' and fall unconscious.');
+      return console.log('(crit) You suffered: ' + dmg * 2 + ' dmg from the ' + enemy.name + ' and fall unconscious.');
     }
-    return console.log('CRIT! You suffered: ' + dmg * 2 + ' dmg from the ' + enemy.name + '.');
+    return console.log('(crit) You suffered: ' + dmg * 2 + ' dmg from the ' + enemy.name + '.');
   } else if (enemy.atkMod + attackRoll >= player.AC) {
     player.tempHP -= dmg;
     if (player.tempHP <= 0) {
-      return console.log('HIT! You suffered: ' + dmg + ' dmg from the ' + enemy.name + ' and fall unconscious.');
+      return console.log('(hit) You suffered: ' + dmg + ' dmg from the ' + enemy.name + ' and fall unconscious.');
     }
-    return console.log('HIT! You suffered: ' + dmg + ' dmg from the ' + enemy.name + '.');
+    return console.log('(hit) You suffered: ' + dmg + ' dmg from the ' + enemy.name + '.');
   } else {
-    return console.log('MISS! The ' + enemy.name + ' failed to hit you.');
+    return console.log('(miss) The ' + enemy.name + ' failed to hit you.');
   }
 };
 
@@ -234,7 +239,7 @@ const clearDead = (enemies) => {
 const makeChoiceOfEnemies = (enemies) => {
   let choices = [];
   for (let m = 0; m < enemies.length; m++) {
-    choices[m] = enemies[m].name + ' HP: ' + enemies[m].HP;
+    choices[m] = enemies[m].name + ' HP: ' + enemies[m].HP + ' Armor Class: ' + enemies[m].AC + ' Challenge Rating: ' + enemies[m].CR + ' Number of Attacks: ' + enemies[m].numOfAtks;
   }
   return choices;
 };
@@ -243,6 +248,16 @@ const makeChoiceOfPotion = (player) => {
   let choices = [];
   for (let m = 0; m < player.equipment.potion.length; m++) {
     choices[m] = player.equipment.potion[m].name + ' Heals: ' + player.equipment.potion[m].healDisplay;
+  }
+  return choices;
+};
+
+const makeChoiceOfSpecials = (player) => {
+  let choices = [];
+  for (let m = 0; m < player.specials.length; m++) {
+    if (player.specials[m].counter > 0) {
+      choices[m] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
+    }
   }
   return choices;
 };
@@ -259,37 +274,84 @@ const drinkPotion = (player, potion, indexOfPotion) => {
   console.log('Your HP now: ' + player.tempHP);
 };
 
+const activateSpecial = (player, whatToActivate) => {
+  if (player.specials[whatToActivate].name === 'Action Surge') {
+    player.specials[whatToActivate].counter--;
+    if (player.specials[whatToActivate].counter === 0) {
+      player.specials.splice(whatToActivate, 1);
+    }
+    return player.numOfAtks;
+  }
+  if (player.specials[whatToActivate].name === 'Second Wind') {
+    player.specials[whatToActivate].counter--;
+    let heal = dice.roll(1, 10) + player.lvl;
+    player.tempHP += heal;
+    console.log('You have regained: ' + heal + 'HPs');
+    if (player.specials[whatToActivate].counter === 0) {
+      player.specials.splice(whatToActivate, 1);
+    }
+    if (player.tempHP > player.HP) {
+      player.tempHP = player.HP;
+    }
+    return 0;
+  }
+};
 // in case its players turn...
 const playerUI = (player, enemies) => {
+  let remainingAttacks = clone(player.numOfAtks);
+  let specialsPerTurn = true;
   while (true) {
+    console.log('What do you want to do?');
     let answers = ['Attack', 'Drink Potion', 'Special'];
-    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Do nothing'});
+    let index = readlineSync.keyInSelect(answers, '', {cancel: 'Do nothing this turn.'});
 
     if (index === 0) {
-      for (let i = 0; i < player.numOfAtks; i++) {
+      for (let i = 0; i < remainingAttacks; i) {
         let answers = makeChoiceOfEnemies(enemies);
-        let whoToAttack = readlineSync.keyInSelect(answers, 'Who do you want to attack?', {cancel: 'Cancel'});
+        console.log('Who do you want to attack? You have: ' + remainingAttacks + ' Attacks left for this turn.');
+        let whoToAttack = readlineSync.keyInSelect(answers, '', {cancel: 'Forgo attack'});
+        if (whoToAttack === -1) {
+          remainingAttacks--;
+          continue;
+        }
         playerAttack(player, enemies[whoToAttack]);
+        remainingAttacks--;
         enemies = clearDead(enemies);
         if (enemies[0] === undefined) {
           console.log('All enemies have been defeated!');
           break;
         }
       }
+      remainingAttacks = clone(player.numOfAtks);
       break;
     } else if (index === 1) {
       let answers = makeChoiceOfPotion(player);
-      // console.log(makeChoiceOfPotion(player));
       if (answers[0] === undefined) {
-        console.log('You do not have any potions left');
+        console.log('You do not have any potions left.');
         continue;
       }
       let whatToDrink = readlineSync.keyInSelect(answers, 'Drink:', {cancel: 'Cancel'});
       drinkPotion(player, player.equipment.potion[whatToDrink], whatToDrink);
       continue;
     } else if (index === 2) {
-      // what, apply execute
-      // continue
+      if (specialsPerTurn === false) {
+        console.log('You can activate only 1 special per turn.');
+        continue;
+      }
+      let answers = makeChoiceOfSpecials(player);
+      if (answers[0] === undefined) {
+        console.log('You do not have any specials to activate.');
+        continue;
+      }
+      console.log('What to activate?');
+      let whatToActivate = readlineSync.keyInSelect(answers, '', {cancel: 'Cancel'});
+      if (whatToActivate !== -1) {
+        specialsPerTurn = false;
+        remainingAttacks += activateSpecial(player, whatToActivate);
+        continue;
+      } else {
+        continue;
+      }
     } else {
       break;
     }
@@ -299,19 +361,22 @@ const playerUI = (player, enemies) => {
 const endingSequence = (character, difficulty) => {
   if (character.tempHP > 0) {
     console.log('You are victorious!');
-    character.exp += 500 * sumCR(character.lvl, difficulty);
-    character.gold += 500 * sumCR(character.lvl, difficulty);
-    character.tempHP = character.HP;
-    delete character.secondWindCounter;
-    delete character.actionSurgeCounter;
+
+    let expWin = 500 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
+    character.exp += expWin;
+    let goldWin = 500 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
+    character.gold += goldWin;
+
+    console.log('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold.');
   } else {
     console.log('You have been defeated!');
-    character.exp += 250 * sumCR(character.lvl, difficulty);
-    character.gold += 0;
-    character.tempHP = character.HP;
-    delete character.secondWindCounter;
-    delete character.actionSurgeCounter;
+
+    let expWin = 250 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
+    character.exp += expWin;
+    console.log('You have gained: ' + expWin + ' experience points and have not gained any gold.');
   }
+  character.tempHP = character.HP;
+  delete character.specials;
 };
 
 const combat = (character) => {
@@ -353,9 +418,10 @@ const combat = (character) => {
   }
   endingSequence(character, difficulty);
 };
-// combat(blankCharacter);
+
+combat(blankCharacter);
 // characterLoader(blankCharacter);
-// console.log(blankCharacter.equipment);
+// console.log(blankCharacter);
 
 module.exports = {
   choosePool,
