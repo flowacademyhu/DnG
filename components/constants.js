@@ -39,6 +39,8 @@ const blankCharacter = {
   AC: 0,
   init: 0,
   numOfAttacks: 1,
+  secondWind: 1,
+  actionSurge: 0,
   equipment: {
     armor: [
       {

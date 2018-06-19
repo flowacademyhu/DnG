@@ -197,6 +197,7 @@ const levelUp = (charSheet) => {
 
 const levels = (charSheet) => {
   if (charSheet.lvl >= 2 && charSheet.lvlBoolean.lvl2 === false) {
+    charSheet.actionSurge += 1;
     charSheet.proficiency += 2;
     charSheet.lvlBoolean.lvl2 = true;
   }
@@ -225,6 +226,7 @@ const levels = (charSheet) => {
   }
   if (charSheet.lvl >= 8 && charSheet.lvlBoolean.lvl8 === false) {
     charSheet.proficiency += 3;
+    charSheet.secondWind += 1;
     distributeLvlUpPoints(charSheet, 2);
     charSheet.lvlBoolean.lvl8 = true;
   }
