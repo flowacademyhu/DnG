@@ -63,37 +63,56 @@ const shieldList = [
 
 const weaponList = [
   {
+    name: 'Rusty Dagger',
+    dmgDisplay: '1-3',
+    dmg: () => {
+      return dice.roll(1, 3);
+    },
+    price: 0,
+    type: 'onehanded'
+  },
+  {
     name: 'Dagger',
     dmgDisplay: '1-6',
-    dmg: dice.roll(1, 6),
+    dmg: () => {
+      return dice.roll(1, 6);
+    },
     price: 10,
     type: 'onehanded'
   },
   {
     name: 'Longsword',
     dmgDisplay: '1-10',
-    dmg: dice.roll(1, 10),
+    dmg: () => {
+      return dice.roll(1, 10);
+    },
     price: 60,
     type: 'onehanded'
   },
   {
     name: 'Shortsword',
     dmgDisplay: '1-8',
-    dmg: dice.roll(1, 8),
+    dmg: () => {
+      return dice.roll(1, 8);
+    },
     price: 40,
     type: 'onehanded'
   },
   {
     name: 'Greatsword',
     dmgDisplay: '2-12',
-    dmg: dice.roll(2, 6),
+    dmg: () => {
+      return dice.roll(2, 6);
+    },
     price: 200,
     type: 'twohanded'
   },
   {
     name: 'Greataxe',
     dmgDisplay: '1-12',
-    dmg: dice.roll(1, 12),
+    dmg: () => {
+      return dice.roll(1, 12);
+    },
     price: 120,
     type: 'twohanded'
   }

@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/Godfrid/DnG#readme",
   "dependencies": {
-    "chalk": "^2.4.1",
     "clone": "^2.1.1",
     "console-clear": "^1.1.0",
     "readline-sync": "^1.4.9",

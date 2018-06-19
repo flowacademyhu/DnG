@@ -197,6 +197,7 @@ const levelUp = (charSheet) => {
 
 const levels = (charSheet) => {
   if (charSheet.lvl >= 2 && charSheet.lvlBoolean.lvl2 === false) {
+    charSheet.actionSurge += 1;
     charSheet.proficiency += 2;
     charSheet.lvlBoolean.lvl2 = true;
   }
@@ -225,6 +226,7 @@ const levels = (charSheet) => {
   }
   if (charSheet.lvl >= 8 && charSheet.lvlBoolean.lvl8 === false) {
     charSheet.proficiency += 3;
+    charSheet.secondWind += 1;
     distributeLvlUpPoints(charSheet, 2);
     charSheet.lvlBoolean.lvl8 = true;
   }
@@ -311,7 +313,7 @@ const shopAll = (charSheet, i) => {
     } else if (i === 3) {
       list.push(`${item.name} | ${item.healDisplay} HP | ${item.price} gold`);
     } else if (i === 4 || i === 5) {
-      list.push(`${item.name} | ${item.AC} AC | ${item.ATK0} ATK | ${item.price} gold`);
+      list.push(`${item.name} | ${item.AC} AC | ${item.ATK} ATK | ${item.price} gold`);
     }
   });
 

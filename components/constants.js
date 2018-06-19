@@ -17,6 +17,7 @@ const blankCharacter = {
   },
   exp: 0,
   HP: 0,
+  tempHP: 0,
   ATK: 0,
   attributes: {
     Str: 0,
@@ -38,6 +39,8 @@ const blankCharacter = {
   AC: 0,
   init: 0,
   numOfAttacks: 1,
+  secondWind: 1,
+  actionSurge: 0,
   equipment: {
     armor: [
       {
@@ -52,7 +55,9 @@ const blankCharacter = {
       {
         name: 'Rusty Dagger',
         dmgDisplay: '1-3',
-        dmg: dice.roll(1, 3),
+        dmg: () => {
+          return dice.roll(1, 3);
+        },
         price: 0,
         type: 'onehanded'
       }
