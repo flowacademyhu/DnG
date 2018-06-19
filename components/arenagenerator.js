@@ -2,9 +2,8 @@ const dice = require('./dice');
 const monsters = require('./monsters');
 const clone = require('clone');
 const readlineSync = require('readline-sync');
-
+const items = require('./items');
 // A lvl input and difficulty is needed and full charsheet. At the end has to save charSheet
-// Difficulty: integer 1-3
 
 // Choose a random group of enemies.
 const choosePool = () => {
@@ -20,8 +19,19 @@ const choosePool = () => {
   return pool;
 };
 
+const chooseDifficulty = () => {
+  console.log('Choose difficulty:');
+  let answers = ['Easy', 'Normal', 'Hard'];
+  let index = readlineSync.keyInSelect(answers, '', {cancel: 'Cancel'});
+  if (index >= 0) {
+    return index + 1;
+  } else {
+    console.log('Returning to menu.');
+  }
+};
+
 // Calculate sum CR
-const sumCR = (difficulty, lvl) => {
+const sumCR = (lvl, difficulty) => {
   let sumCR = (difficulty * 0.25) * lvl;
   return sumCR;
 };
@@ -59,10 +69,10 @@ const genPop = (sumCR) => {
 
 // In progress combat sys and test, dont forget to remove blankchar and ref.:
 
-const blankCharacter = {
+let blankCharacter = {
   name: 'JATEKOS',
   race: 'EMBER',
-  lvl: 5,
+  lvl: 1,
   exp: 0,
   HP: 60,
   tempHP: 60,
@@ -87,6 +97,8 @@ const blankCharacter = {
   AC: 15,
   init: 3,
   numOfAtks: 4,
+  secondWind: 1,
+  actionSurge: 0,
   equipment: {
     armor: [
       {
@@ -99,11 +111,8 @@ const blankCharacter = {
     ],
     weapon: [
       {
-        name: 'Sword',
+        name: 'Longsword',
         dmgDisplay: '1-10',
-        dmg: () => {
-          return dice.roll(1, 10);
-        },
         price: 5,
         type: 'onehanded'
       }
@@ -111,20 +120,14 @@ const blankCharacter = {
     shield: [],
     potion: [
       {
-        name: 'Medium HP potion',
+        name: 'Small HP potion',
         price: 80,
-        healDisplay: '4-18',
-        heal: () => {
-          return dice.roll(2, 8) + 2;
-        }
+        healDisplay: '4-18'
       },
       {
         name: 'Small HP potion',
         price: 20,
-        healDisplay: '3-10',
-        heal: () => {
-          return dice.roll(1, 8) + 2;
-        }
+        healDisplay: '3-10'
       }
     ],
     ring: [],
@@ -139,6 +142,30 @@ const blankCharacter = {
     }
   },
   gold: 0
+};
+
+// items load methodes.
+const characterLoader = (character) => {
+  character.actionSurgeCounter = clone(character.actionSurge);
+  character.secondWindCounter = clone(character.secondWind);
+
+  let i = 0;
+  let j = 0;
+  for (i; i < character.equipment.weapon.length; i++) {
+    for (j; j < items.weaponList.length; j++) {
+      if (character.equipment.weapon[i].name === items.weaponList[j].name) {
+        character.equipment.weapon[i].dmg = items.weaponList[j].dmg;
+      }
+    }
+  }
+
+  for (i = 0; i < character.equipment.potion.length; i++) {
+    for (j = 0; j < items.potionList.length; j++) {
+      if (character.equipment.potion[i].name === items.potionList[j].name) {
+        character.equipment.potion[i].heal = items.potionList[j].heal;
+      }
+    }
+  }
 };
 
 const remainingHPOfGenPop = (genPop) => {
@@ -252,7 +279,7 @@ const playerUI = (player, enemies) => {
       break;
     } else if (index === 1) {
       let answers = makeChoiceOfPotion(player);
-      console.log(makeChoiceOfPotion(player));
+      // console.log(makeChoiceOfPotion(player));
       if (answers[0] === undefined) {
         console.log('You do not have any potions left');
         continue;
@@ -269,20 +296,29 @@ const playerUI = (player, enemies) => {
   }
 };
 
-const checkWinner = (character) => {
+const endingSequence = (character, difficulty) => {
   if (character.tempHP > 0) {
     console.log('You are victorious!');
-    character.exp += 100;
-    character.gold += 100;
-    // winnings
+    character.exp += 500 * sumCR(character.lvl, difficulty);
+    character.gold += 500 * sumCR(character.lvl, difficulty);
+    character.tempHP = character.HP;
+    delete character.secondWindCounter;
+    delete character.actionSurgeCounter;
   } else {
     console.log('You have been defeated!');
-    character.exp += 50;
+    character.exp += 250 * sumCR(character.lvl, difficulty);
     character.gold += 0;
+    character.tempHP = character.HP;
+    delete character.secondWindCounter;
+    delete character.actionSurgeCounter;
   }
 };
 
-const combat = (enemies, character) => {
+const combat = (character) => {
+  characterLoader(character);
+  let difficulty = chooseDifficulty();
+  let asumCR = sumCR(character.lvl, difficulty);
+  let enemies = genPop(asumCR);
   let characterInit = character.init + dice.roll(1, 20);
   console.log('CharacterInit =', characterInit);
   let turnCounter = 1;
@@ -297,8 +333,6 @@ const combat = (enemies, character) => {
       // console.log(initCounter);
       if (characterInit === initCounter) {
         playerUI(character, enemies);
-        // playerAttack(character, enemies[0]);
-        // after every attack:
         enemies = clearDead(enemies);
       }
       for (let m = 0; m < enemies.length; m++) {
@@ -317,10 +351,11 @@ const combat = (enemies, character) => {
     }
     turnCounter += 1;
   }
-  checkWinner(character);
+  endingSequence(character, difficulty);
 };
-
-combat(genPop(0.5), blankCharacter);
+// combat(blankCharacter);
+// characterLoader(blankCharacter);
+// console.log(blankCharacter.equipment);
 
 module.exports = {
   choosePool,
@@ -330,5 +365,8 @@ module.exports = {
   remainingHPOfGenPop,
   playerAttack,
   enemyAttack,
-  playerUI
+  playerUI,
+  chooseDifficulty,
+  characterLoader,
+  combat
 };
