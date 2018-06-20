@@ -47,7 +47,7 @@ const genPop = (sumCR) => {
   for (let i = 0; i < 8; i++) {
     // pick a monster object from list, clone and add to pop
     monster = type.filter(monster => monster.CR <= remCR);
-    monster = monster.filter(monster => monster.CR >= remCR - 2);
+    monster = monster.filter(monster => monster.CR >= remCR - 2.25);
     population[i] = clone(monster[dice.randomIndex(monster)]);
     // generate fix HP and Initiative
     population[i].HP = population[i].HP();
@@ -454,16 +454,18 @@ const combat = (character) => {
 // characterLoader(blankCharacter);
 // console.log(blankCharacter);
 
+/* //Test genPop:
+for (let i = 0; i < 500; i++) {
+  for (let cr = 0.25; cr <= 7.5; cr += 0.25) {
+    let x = genPop(cr)
+    if (cr === 7.5) {
+      console.log(i, cr);
+      console.log(x[0].name);
+    }
+  }
+}
+*/
+
 module.exports = {
-  choosePool,
-  sumCR,
-  genPop,
-  clearDead,
-  remainingHPOfGenPop,
-  playerAttack,
-  enemyAttack,
-  playerUI,
-  chooseDifficulty,
-  characterLoader,
   combat
 };
