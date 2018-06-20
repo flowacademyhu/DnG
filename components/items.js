@@ -27,46 +27,26 @@ const armorList = [
     price: 1000
   },
   {
-    name: 'Chain mail',
-    AC: 6,
-    price: 1500
-  },
-  {
-    name: 'Splint',
-    AC: 7,
-    price: 2000
-  },
-  {
     name: 'Plate',
-    AC: 8,
+    AC: 6,
     price: 3000
   }
 ];
 
 const shieldList = [
   {
-    name: 'Small Shield',
+    name: 'Shield',
     AC: 2,
     price: 100
-  },
-  {
-    name: 'Medium Shield',
-    AC: 3,
-    price: 200
-  },
-  {
-    name: 'Large Shield',
-    AC: 4,
-    price: 300
   }
 ];
 
 const weaponList = [
   {
     name: 'Rusty Dagger',
-    dmgDisplay: '1-3',
+    dmgDisplay: '1-4',
     dmg: () => {
-      return dice.roll(1, 3);
+      return dice.roll(1, 4);
     },
     price: 0,
     type: 'onehanded'
@@ -78,6 +58,15 @@ const weaponList = [
       return dice.roll(1, 6);
     },
     price: 10,
+    type: 'onehanded'
+  },
+  {
+    name: 'Battle Axe',
+    dmgDisplay: '1-12',
+    dmg: () => {
+      return dice.roll(1, 12);
+    },
+    price: 80,
     type: 'onehanded'
   },
   {
@@ -148,66 +137,42 @@ const potionList = [
 const ringList = [
   {
     name: 'Ring of Protection',
-    price: 300,
+    price: 400,
     AC: 1,
     ATK: 0
   },
   {
     name: 'Ring of Greater Protection',
-    price: 600,
+    price: 1000,
     AC: 2,
     ATK: 0
   },
   {
     name: 'Ring of Power',
-    price: 300,
+    price: 600,
     AC: 0,
     ATK: 1
   },
   {
     name: 'Ring of Greater Power',
-    price: 600,
+    price: 900,
     AC: 0,
     ATK: 2
-  },
-  {
-    name: 'Ring of the Warrior',
-    price: 600,
-    AC: 1,
-    ATK: 1
-  },
-  {
-    name: 'Ring of the Knight',
-    price: 1200,
-    AC: 2,
-    ATK: 2
-  },
-  {
-    name: 'Ring of the King',
-    price: 1800,
-    AC: 3,
-    ATK: 3
   }
 ];
 
 const amuletList = [
   {
     name: 'Amulet of the Warrior',
-    price: 1000,
+    price: 5000,
     AC: 1,
     ATK: 1
   },
   {
     name: 'Amulet of the Knight',
-    price: 2000,
+    price: 10000,
     AC: 2,
     ATK: 2
-  },
-  {
-    name: 'Amulet of the King',
-    price: 3000,
-    AC: 3,
-    ATK: 3
   }
 ];
 
