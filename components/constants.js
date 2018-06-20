@@ -54,9 +54,9 @@ const blankCharacter = {
     weapon: [
       {
         name: 'Rusty Dagger',
-        dmgDisplay: '1-3',
+        dmgDisplay: '1-6',
         dmg: () => {
-          return dice.roll(1, 3);
+          return dice.roll(1, 6);
         },
         price: 0,
         type: 'onehanded'
@@ -81,7 +81,7 @@ const blankCharacter = {
       amulet: []
     }
   },
-  gold: 0
+  gold: 100
 };
 
 module.exports = {
