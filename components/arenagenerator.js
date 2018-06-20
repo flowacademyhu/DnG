@@ -45,9 +45,9 @@ const genPop = (sumCR) => {
   let remCR = sumCR;
 
   for (let i = 0; i < 8; i++) {
-    // pick a monster object from list, clone and add to pop, after monster expansion put remCR crit down to 1.5
+    // pick a monster object from list, clone and add to pop
     monster = type.filter(monster => monster.CR <= remCR);
-    monster = monster.filter(monster => monster.CR >= remCR - 4);
+    monster = monster.filter(monster => monster.CR >= remCR - 2);
     population[i] = clone(monster[dice.randomIndex(monster)]);
     // generate fix HP and Initiative
     population[i].HP = population[i].HP();
@@ -67,7 +67,7 @@ const genPop = (sumCR) => {
   return population;
 };
 
-// In progress combat sys and test, dont forget to remove blankchar and ref. Debug char:
+// Debug char:
 /*
 let blankCharacter = {
   name: 'JATEKOS',
@@ -97,8 +97,8 @@ let blankCharacter = {
   AC: 15,
   init: 3,
   numOfAtks: 2,
-  secondWind: 2,
-  actionSurge: 2,
+  secondWind: 1,
+  actionSurge: 0,
   equipment: {
     armor: [
       {
@@ -148,12 +148,19 @@ let blankCharacter = {
 // items load methods.
 const characterLoader = (character) => {
   character.specials = [{}, {}];
-  character.specials[0].name = 'Action Surge';
-  character.specials[0].counter = clone(character.actionSurge);
-  character.specials[0].description = ' (Doubles your number of attacks for this turn.) Use(s) left: ';
-  character.specials[1].name = 'Second Wind';
-  character.specials[1].counter = clone(character.secondWind);
-  character.specials[1].description = ' (Restores 1d10 + level HP) Use(s) left: ';
+  let index = 0;
+  character.specials[index].name = 'Action Surge';
+  character.specials[index].counter = clone(character.actionSurge);
+  character.specials[index].description = ' (Doubles your number of attacks for this turn.) Use(s) left: ';
+  index++;
+
+  character.specials[index].name = 'Second Wind';
+  character.specials[index].counter = clone(character.secondWind);
+  character.specials[index].description = ' (Restores 1d10 + level HP) Use(s) left: ';
+
+  if (character.specials[0].counter === 0) {
+    character.specials.splice(0, 1);
+  }
 
   let i = 0;
   let j = 0;
@@ -255,11 +262,11 @@ const makeChoiceOfPotion = (player) => {
 
 const makeChoiceOfSpecials = (player) => {
   let choices = [];
-  let j = 0;
+  let index = 0;
   for (let m = 0; m < player.specials.length; m++) {
-    if (player.specials[m].counter > 0) {
-      choices[j] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
-      j++;
+    if (player.specials[m].counter >= 0) {
+      choices[index] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
+      index++;
     }
   }
   return choices;
@@ -277,6 +284,7 @@ const drinkPotion = (player, potion, indexOfPotion) => {
   console.log('Your HP now: ' + player.tempHP);
 };
 
+// Might rework in the future for new featurs:
 /* const activateSpecial = (player, whatToActivate) => {
   if (player.specials[whatToActivate].name === 'Action Surge') {
     player.specials[whatToActivate].counter--;

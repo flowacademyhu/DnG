@@ -53,7 +53,7 @@ const blankCharacter = {
     ],
     weapon: [
       {
-        name: 'Rusty Dagger',
+        name: 'Dagger',
         dmgDisplay: '1-6',
         dmg: () => {
           return dice.roll(1, 6);
