@@ -136,6 +136,7 @@ const calculateStats = (charSheet) => {
 
 const calculateHP = (charSheet) => {
   charSheet.HP = 4 + (6 + charSheet.modifiers.ConMOD) * charSheet.lvl;
+  charSheet.tempHP = charSheet.HP;
 };
 
 const calculateInit = (charSheet) => {
@@ -258,6 +259,7 @@ const distributeLvlUpPoints = (charSheet, i) => {
 
 const characterMenu = (charSheet) => {
   while (true) {
+    saveChars(charSheet);
     calculateStats(charSheet);
 
     clear();
