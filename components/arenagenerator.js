@@ -277,7 +277,7 @@ const drinkPotion = (player, potion, indexOfPotion) => {
   console.log('Your HP now: ' + player.tempHP);
 };
 
-const activateSpecial = (player, whatToActivate) => {
+/* const activateSpecial = (player, whatToActivate) => {
   if (player.specials[whatToActivate].name === 'Action Surge') {
     player.specials[whatToActivate].counter--;
     if (player.specials[whatToActivate].counter === 0) {
@@ -296,9 +296,10 @@ const activateSpecial = (player, whatToActivate) => {
     if (player.tempHP > player.HP) {
       player.tempHP = player.HP;
     }
-    return 0;
   }
 };
+*/
+
 // in case its players turn...
 const playerUI = (player, enemies) => {
   let remainingAttacks = clone(player.numOfAtks);
@@ -350,7 +351,26 @@ const playerUI = (player, enemies) => {
       let whatToActivate = readlineSync.keyInSelect(answers, '', {cancel: 'Cancel'});
       if (whatToActivate !== -1) {
         specialsPerTurn = false;
-        remainingAttacks += activateSpecial(player, whatToActivate);
+        if (player.specials[whatToActivate].name === 'Second Wind') {
+          player.specials[whatToActivate].counter--;
+          let heal = dice.roll(1, 10) + player.lvl;
+          player.tempHP += heal;
+          console.log('You have regained: ' + heal + 'HPs');
+          if (player.specials[whatToActivate].counter === 0) {
+            player.specials.splice(whatToActivate, 1);
+          }
+          if (player.tempHP > player.HP) {
+            player.tempHP = player.HP;
+          }
+          continue;
+        }
+        if (player.specials[whatToActivate].name === 'Action Surge') {
+          player.specials[whatToActivate].counter--;
+          if (player.specials[whatToActivate].counter === 0) {
+            player.specials.splice(whatToActivate, 1);
+          }
+          remainingAttacks += player.numOfAtks;
+        }
         continue;
       } else {
         continue;
@@ -370,13 +390,13 @@ const endingSequence = (character, difficulty) => {
     let goldWin = 500 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
     character.gold += goldWin;
 
-    console.log('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold.');
+    readlineSync.question('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold.');
   } else {
     console.log('You have been defeated!');
 
     let expWin = 250 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
     character.exp += expWin;
-    console.log('You have gained: ' + expWin + ' experience points and have not gained any gold.');
+    readlineSync.question('You have gained: ' + expWin + ' experience points and have not gained any gold.');
   }
   character.tempHP = character.HP;
   delete character.specials;
@@ -396,7 +416,6 @@ const combat = (character) => {
   while (character.tempHP > 0 && remainingHPOfGenPop(enemies) > 0) {
     let initCounter = 30;
     console.log('Turn:', turnCounter);
-    console.log('You have: ' + character.HP + ' HP.');
     for (initCounter; initCounter > -5; initCounter--) {
       // console.log(initCounter);
       if (characterInit === initCounter) {
@@ -407,6 +426,7 @@ const combat = (character) => {
         if (enemies[m].init === initCounter) {
           for (let i = 0; i < enemies[m].numOfAtks; i++) {
             enemyAttack(enemies[m], character);
+            console.log('You have: ' + character.tempHP + ' HP.');
             if (character.tempHP <= 0) {
               break;
             }
