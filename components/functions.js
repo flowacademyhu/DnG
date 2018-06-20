@@ -200,44 +200,38 @@ const levelUp = (charSheet) => {
 const levels = (charSheet) => {
   if (charSheet.lvl >= 2 && charSheet.lvlBoolean.lvl2 === false) {
     charSheet.actionSurge += 1;
-    charSheet.proficiency += 2;
     charSheet.lvlBoolean.lvl2 = true;
   }
   if (charSheet.lvl >= 3 && charSheet.lvlBoolean.lvl3 === false) {
-    charSheet.proficiency += 2;
     charSheet.lvlBoolean.lvl3 = true;
   }
   if (charSheet.lvl >= 4 && charSheet.lvlBoolean.lvl4 === false) {
-    charSheet.proficiency += 2;
     distributeLvlUpPoints(charSheet, 2);
     charSheet.lvlBoolean.lvl4 = true;
   }
   if (charSheet.lvl >= 5 && charSheet.lvlBoolean.lvl5 === false) {
-    charSheet.proficiency += 3;
+    charSheet.proficiency += 1;
     charSheet.numberOfAttacks += 1;
     charSheet.lvlBoolean.lvl5 = true;
   }
   if (charSheet.lvl >= 6 && charSheet.lvlBoolean.lvl6 === false) {
-    charSheet.proficiency += 3;
     distributeLvlUpPoints(charSheet, 2);
     charSheet.lvlBoolean.lvl6 = true;
   }
   if (charSheet.lvl >= 7 && charSheet.lvlBoolean.lvl7 === false) {
-    charSheet.proficiency += 3;
     charSheet.lvlBoolean.lvl7 = true;
   }
   if (charSheet.lvl >= 8 && charSheet.lvlBoolean.lvl8 === false) {
-    charSheet.proficiency += 3;
     charSheet.secondWind += 1;
     distributeLvlUpPoints(charSheet, 2);
     charSheet.lvlBoolean.lvl8 = true;
   }
   if (charSheet.lvl >= 9 && charSheet.lvlBoolean.lvl9 === false) {
-    charSheet.proficiency += 4;
+    charSheet.proficiency += 1;
     charSheet.lvlBoolean.lvl9 = true;
   }
   if (charSheet.lvl >= 10 && charSheet.lvlBoolean.lvl10 === false) {
-    charSheet.proficiency += 4;
+    charSheet.numberOfAttacks += 1;
     charSheet.lvlBoolean.lvl10 = true;
   }
 };

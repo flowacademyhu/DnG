@@ -45,9 +45,9 @@ const genPop = (sumCR) => {
   let remCR = sumCR;
 
   for (let i = 0; i < 8; i++) {
-    // pick a monster object from list, clone and add to pop, after monster expansion put remCR crit down to 1.5
+    // pick a monster object from list, clone and add to pop
     monster = type.filter(monster => monster.CR <= remCR);
-    monster = monster.filter(monster => monster.CR >= remCR - 4);
+    monster = monster.filter(monster => monster.CR >= remCR - 2.25);
     population[i] = clone(monster[dice.randomIndex(monster)]);
     // generate fix HP and Initiative
     population[i].HP = population[i].HP();
@@ -67,8 +67,8 @@ const genPop = (sumCR) => {
   return population;
 };
 
-// In progress combat sys and test, dont forget to remove blankchar and ref.:
-
+// Debug char:
+/*
 let blankCharacter = {
   name: 'JATEKOS',
   race: 'EMBER',
@@ -97,8 +97,8 @@ let blankCharacter = {
   AC: 15,
   init: 3,
   numOfAtks: 2,
-  secondWind: 2,
-  actionSurge: 2,
+  secondWind: 1,
+  actionSurge: 0,
   equipment: {
     armor: [
       {
@@ -143,16 +143,24 @@ let blankCharacter = {
   },
   gold: 0
 };
+*/
 
 // items load methods.
 const characterLoader = (character) => {
   character.specials = [{}, {}];
-  character.specials[0].name = 'Action Surge';
-  character.specials[0].counter = clone(character.actionSurge);
-  character.specials[0].description = ' (Doubles your number of attacks for this turn.) Use(s) left: ';
-  character.specials[1].name = 'Second Wind';
-  character.specials[1].counter = clone(character.secondWind);
-  character.specials[1].description = ' (Restores 1d10 + level HP) Use(s) left: ';
+  let index = 0;
+  character.specials[index].name = 'Action Surge';
+  character.specials[index].counter = clone(character.actionSurge);
+  character.specials[index].description = ' (Doubles your number of attacks for this turn.) Use(s) left: ';
+  index++;
+
+  character.specials[index].name = 'Second Wind';
+  character.specials[index].counter = clone(character.secondWind);
+  character.specials[index].description = ' (Restores 1d10 + level HP) Use(s) left: ';
+
+  if (character.specials[0].counter === 0) {
+    character.specials.splice(0, 1);
+  }
 
   let i = 0;
   let j = 0;
@@ -254,9 +262,11 @@ const makeChoiceOfPotion = (player) => {
 
 const makeChoiceOfSpecials = (player) => {
   let choices = [];
+  let index = 0;
   for (let m = 0; m < player.specials.length; m++) {
-    if (player.specials[m].counter > 0) {
-      choices[m] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
+    if (player.specials[m].counter >= 0) {
+      choices[index] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
+      index++;
     }
   }
   return choices;
@@ -274,7 +284,8 @@ const drinkPotion = (player, potion, indexOfPotion) => {
   console.log('Your HP now: ' + player.tempHP);
 };
 
-const activateSpecial = (player, whatToActivate) => {
+// Might rework in the future for new featurs:
+/* const activateSpecial = (player, whatToActivate) => {
   if (player.specials[whatToActivate].name === 'Action Surge') {
     player.specials[whatToActivate].counter--;
     if (player.specials[whatToActivate].counter === 0) {
@@ -293,9 +304,10 @@ const activateSpecial = (player, whatToActivate) => {
     if (player.tempHP > player.HP) {
       player.tempHP = player.HP;
     }
-    return 0;
   }
 };
+*/
+
 // in case its players turn...
 const playerUI = (player, enemies) => {
   let remainingAttacks = clone(player.numOfAtks);
@@ -347,7 +359,26 @@ const playerUI = (player, enemies) => {
       let whatToActivate = readlineSync.keyInSelect(answers, '', {cancel: 'Cancel'});
       if (whatToActivate !== -1) {
         specialsPerTurn = false;
-        remainingAttacks += activateSpecial(player, whatToActivate);
+        if (player.specials[whatToActivate].name === 'Second Wind') {
+          player.specials[whatToActivate].counter--;
+          let heal = dice.roll(1, 10) + player.lvl;
+          player.tempHP += heal;
+          console.log('You have regained: ' + heal + 'HPs');
+          if (player.specials[whatToActivate].counter === 0) {
+            player.specials.splice(whatToActivate, 1);
+          }
+          if (player.tempHP > player.HP) {
+            player.tempHP = player.HP;
+          }
+          continue;
+        }
+        if (player.specials[whatToActivate].name === 'Action Surge') {
+          player.specials[whatToActivate].counter--;
+          if (player.specials[whatToActivate].counter === 0) {
+            player.specials.splice(whatToActivate, 1);
+          }
+          remainingAttacks += player.numOfAtks;
+        }
         continue;
       } else {
         continue;
@@ -367,13 +398,13 @@ const endingSequence = (character, difficulty) => {
     let goldWin = 500 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
     character.gold += goldWin;
 
-    console.log('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold.');
+    readlineSync.question('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold.');
   } else {
     console.log('You have been defeated!');
 
     let expWin = 250 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
     character.exp += expWin;
-    console.log('You have gained: ' + expWin + ' experience points and have not gained any gold.');
+    readlineSync.question('You have gained: ' + expWin + ' experience points and have not gained any gold.');
   }
   character.tempHP = character.HP;
   delete character.specials;
@@ -389,7 +420,6 @@ const combat = (character) => {
   let turnCounter = 1;
   console.log('enemies:', enemies);
   console.log('starting HP of player: ' + character.tempHP + ' starting HP of enemies: ' + remainingHPOfGenPop(enemies));
-  // check death
 
   while (character.tempHP > 0 && remainingHPOfGenPop(enemies) > 0) {
     let initCounter = 30;
@@ -404,6 +434,7 @@ const combat = (character) => {
         if (enemies[m].init === initCounter) {
           for (let i = 0; i < enemies[m].numOfAtks; i++) {
             enemyAttack(enemies[m], character);
+            console.log('You have: ' + character.tempHP + ' HP.');
             if (character.tempHP <= 0) {
               break;
             }
@@ -424,16 +455,18 @@ const combat = (character) => {
 // characterLoader(blankCharacter);
 // console.log(blankCharacter);
 
+/* //Test genPop:
+for (let i = 0; i < 500; i++) {
+  for (let cr = 0.25; cr <= 7.5; cr += 0.25) {
+    let x = genPop(cr)
+    if (cr === 7.5) {
+      console.log(i, cr);
+      console.log(x[0].name);
+    }
+  }
+}
+*/
+
 module.exports = {
-  choosePool,
-  sumCR,
-  genPop,
-  clearDead,
-  remainingHPOfGenPop,
-  playerAttack,
-  enemyAttack,
-  playerUI,
-  chooseDifficulty,
-  characterLoader,
   combat
 };
