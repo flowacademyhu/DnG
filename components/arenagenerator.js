@@ -67,8 +67,8 @@ const genPop = (sumCR) => {
   return population;
 };
 
-// In progress combat sys and test, dont forget to remove blankchar and ref.:
-
+// In progress combat sys and test, dont forget to remove blankchar and ref. Debug char:
+/*
 let blankCharacter = {
   name: 'JATEKOS',
   race: 'EMBER',
@@ -143,6 +143,7 @@ let blankCharacter = {
   },
   gold: 0
 };
+*/
 
 // items load methods.
 const characterLoader = (character) => {
@@ -254,9 +255,11 @@ const makeChoiceOfPotion = (player) => {
 
 const makeChoiceOfSpecials = (player) => {
   let choices = [];
+  let j = 0;
   for (let m = 0; m < player.specials.length; m++) {
     if (player.specials[m].counter > 0) {
-      choices[m] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
+      choices[j] = player.specials[m].name + player.specials[m].description + player.specials[m].counter;
+      j++;
     }
   }
   return choices;
@@ -389,11 +392,11 @@ const combat = (character) => {
   let turnCounter = 1;
   console.log('enemies:', enemies);
   console.log('starting HP of player: ' + character.tempHP + ' starting HP of enemies: ' + remainingHPOfGenPop(enemies));
-  // check death
 
   while (character.tempHP > 0 && remainingHPOfGenPop(enemies) > 0) {
     let initCounter = 30;
     console.log('Turn:', turnCounter);
+    console.log('You have: ' + character.HP + ' HP.');
     for (initCounter; initCounter > -5; initCounter--) {
       // console.log(initCounter);
       if (characterInit === initCounter) {

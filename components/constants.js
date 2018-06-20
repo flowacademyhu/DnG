@@ -38,7 +38,7 @@ const blankCharacter = {
   proficiency: 2,
   AC: 0,
   init: 0,
-  numOfAttacks: 1,
+  numOfAtks: 1,
   secondWind: 1,
   actionSurge: 0,
   equipment: {
