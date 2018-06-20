@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/Godfrid/DnG#readme",
   "dependencies": {
+    "axel": "0.0.3",
     "clone": "^2.1.1",
     "console-clear": "^1.1.0",
+    "keypress": "^0.2.1",
     "readline-sync": "^1.4.9",
     "table": "^4.0.3"
   }

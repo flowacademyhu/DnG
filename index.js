@@ -5,7 +5,7 @@ const clear = require('console-clear');
 while (true) {
   clear();
   design.logo();
-  
+
   let mainMenuIndex = functions.mainMenu();
 
   if (mainMenuIndex === 0) {
