@@ -419,7 +419,7 @@ const combat = (character) => {
   endingSequence(character, difficulty);
 };
 
-combat(blankCharacter);
+// combat(blankCharacter);
 // characterLoader(blankCharacter);
 // console.log(blankCharacter);
 

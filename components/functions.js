@@ -7,6 +7,7 @@ const dice = require('./dice');
 const design = require('./design');
 const constants = require('./constants');
 const items = require('./items');
+const arenagenerator = require('./arenagenerator');
 
 // MAIN MENU FUNCTIONS
 
@@ -266,7 +267,7 @@ const characterMenu = (charSheet) => {
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Quit to Main Menu'});
 
     if (index === 0) {
-      console.log('Enter Fight');
+      arenagenerator.combat(charSheet);
     } else if (index === 1) {
       shop(charSheet);
     } else if (index === 2) {
