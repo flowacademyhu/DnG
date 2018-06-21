@@ -253,6 +253,7 @@ const distributeLvlUpPoints = (charSheet, i) => {
 
 const characterMenu = (charSheet) => {
   while (true) {
+    saveChars(charSheet);
     calculateStats(charSheet);
 
     clear();
