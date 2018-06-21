@@ -4,7 +4,7 @@ const armorList = [
   {
     name: 'Leather',
     AC: 1,
-    price: 100
+    price: 50
   },
   {
     name: 'Studded Leather',
@@ -14,17 +14,17 @@ const armorList = [
   {
     name: 'Chain shirt',
     AC: 3,
-    price: 400
+    price: 450
   },
   {
     name: 'Breastplate',
     AC: 4,
-    price: 600
+    price: 800
   },
   {
     name: 'Half Plate',
     AC: 5,
-    price: 1000
+    price: 1600
   },
   {
     name: 'Plate',
@@ -37,7 +37,7 @@ const shieldList = [
   {
     name: 'Shield',
     AC: 2,
-    price: 100
+    price: 200
   }
 ];
 
@@ -62,9 +62,9 @@ const weaponList = [
   },
   {
     name: 'Battle Axe',
-    dmgDisplay: '1-12',
+    dmgDisplay: '2-13',
     dmg: () => {
-      return dice.roll(1, 12);
+      return dice.roll(1, 12) + 1;
     },
     price: 80,
     type: 'onehanded'
@@ -104,6 +104,15 @@ const weaponList = [
     },
     price: 120,
     type: 'twohanded'
+  },
+  {
+    name: 'Sword of Flames',
+    dmgDisplay: '2-16',
+    dmg: () => {
+      return dice.roll(1, 10) + dice.roll(1, 6);
+    },
+    price: 2000,
+    type: 'onehanded'
   }
 ];
 
@@ -137,25 +146,25 @@ const potionList = [
 const ringList = [
   {
     name: 'Ring of Protection',
-    price: 400,
+    price: 500,
     AC: 1,
     ATK: 0
   },
   {
     name: 'Ring of Greater Protection',
-    price: 1000,
+    price: 1500,
     AC: 2,
     ATK: 0
   },
   {
     name: 'Ring of Power',
-    price: 600,
+    price: 900,
     AC: 0,
     ATK: 1
   },
   {
     name: 'Ring of Greater Power',
-    price: 900,
+    price: 1200,
     AC: 0,
     ATK: 2
   }
