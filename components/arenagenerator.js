@@ -448,6 +448,7 @@ const combat = (character) => {
     turnCounter += 1;
   }
   endingSequence(character, difficulty);
+  readlineSync.question(' ');
 };
 
 // combat(blankCharacter);
