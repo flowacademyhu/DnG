@@ -75,7 +75,7 @@ const sheetDesign = (charSheet) => {
 const show = (charSheet, i, j) => {
   let list = ['armor', 'weapon', 'shield', 'ring', 'amulet', 'potion'];
 
-  if (charSheet.equipment[list[i]][j].length > 0) {
+  if (charSheet.equipment[list[i]][j]) {
     return charSheet.equipment[list[i]][j].name;
   } else {
     return '-';
