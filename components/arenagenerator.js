@@ -3,6 +3,7 @@ const monsters = require('./monsters');
 const clone = require('clone');
 const readlineSync = require('readline-sync');
 const items = require('./items');
+const clear = require('console-clear');
 // A lvl input and difficulty is needed and full charsheet. At the end has to save charSheet
 
 // Choose a random group of enemies.
@@ -247,7 +248,7 @@ const clearDead = (enemies) => {
 const makeChoiceOfEnemies = (enemies) => {
   let choices = [];
   for (let m = 0; m < enemies.length; m++) {
-    choices[m] = enemies[m].name + ' HP: ' + enemies[m].HP + ' Armor Class: ' + enemies[m].AC + ' Challenge Rating: ' + enemies[m].CR + ' Number of Attacks: ' + enemies[m].numOfAtks;
+    choices[m] = enemies[m].name + ' HP: ' + enemies[m].HP + ' Armor Class: ' + enemies[m].AC + ' Challenge Rating: ' + enemies[m].CR + ' Number of Attacks: ' + enemies[m].numOfAtks + ' Initiative: ' + enemies[m].init;
   }
   return choices;
 };
@@ -309,10 +310,14 @@ const drinkPotion = (player, potion, indexOfPotion) => {
 */
 
 // in case its players turn...
-const playerUI = (player, enemies) => {
+const playerUI = (player, enemies, characterInit) => {
   let remainingAttacks = clone(player.numOfAtks);
   let specialsPerTurn = true;
   while (true) {
+    console.log('_______________________________________________________________');
+    writeListOfEnemies(enemies);
+    console.log('Your: HP: ' + player.tempHP + '/' + player.HP + ' AC: ' + player.AC + ' Number of Attacks: ' + remainingAttacks + ' Initiative: ' + characterInit);
+    console.log('_______________________________________________________________');
     console.log('What do you want to do?');
     let answers = ['Attack', 'Drink Potion', 'Special'];
     let index = readlineSync.keyInSelect(answers, '', {cancel: 'Do nothing this turn.'});
@@ -322,6 +327,7 @@ const playerUI = (player, enemies) => {
         let answers = makeChoiceOfEnemies(enemies);
         console.log('Who do you want to attack? You have: ' + remainingAttacks + ' Attacks left for this turn.');
         let whoToAttack = readlineSync.keyInSelect(answers, '', {cancel: 'Forgo attack'});
+        clear();
         if (whoToAttack === -1) {
           remainingAttacks--;
           continue;
@@ -343,7 +349,10 @@ const playerUI = (player, enemies) => {
         continue;
       }
       let whatToDrink = readlineSync.keyInSelect(answers, 'Drink:', {cancel: 'Cancel'});
-      drinkPotion(player, player.equipment.potion[whatToDrink], whatToDrink);
+      if (whatToDrink !== -1) {
+        drinkPotion(player, player.equipment.potion[whatToDrink], whatToDrink);
+        continue;
+      }
       continue;
     } else if (index === 2) {
       if (specialsPerTurn === false) {
@@ -398,28 +407,43 @@ const endingSequence = (character, difficulty) => {
     let goldWin = 500 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
     character.gold += goldWin;
 
-    readlineSync.question('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold.');
+    readlineSync.question('You have gained: ' + expWin + ' experience points and ' + goldWin + ' gold. Press ENTER to contiue.');
   } else {
     console.log('You have been defeated!');
 
     let expWin = 250 * sumCR(character.lvl, difficulty) * ((difficulty - 1) / 10 + 1);
     character.exp += expWin;
-    readlineSync.question('You have gained: ' + expWin + ' experience points and have not gained any gold.');
+    readlineSync.question('You have gained: ' + expWin + ' experience points and have not gained any gold. Press Enter to continue');
   }
   character.tempHP = character.HP;
   delete character.specials;
 };
 
+const writeListOfEnemies = (enemies) => {
+  if (enemies.length > 1) {
+    console.log('Your enemies are:');
+  }
+  if (enemies.length === 1) {
+    console.log('Your enemy is a:');
+  }
+
+  for (let i = 0; i < enemies.length; i++) {
+    console.log(enemies[i].name + ': ' + 'HP: ' + enemies[i].HP + ' AC: ' + enemies[i].AC + ' Number of Attacks: ' + enemies[i].numOfAtks + ' Challenge Rating: ' + enemies[i].CR + ' Initiative: ' + enemies[i].init);
+  }
+};
+
 const combat = (character) => {
   characterLoader(character);
   let difficulty = chooseDifficulty();
+  clear();
   let asumCR = sumCR(character.lvl, difficulty);
   let enemies = genPop(asumCR);
   let characterInit = character.init + dice.roll(1, 20);
-  console.log('CharacterInit =', characterInit);
   let turnCounter = 1;
-  console.log('enemies:', enemies);
+  writeListOfEnemies(enemies);
+  console.log('Character Initiative:', characterInit);
   console.log('starting HP of player: ' + character.tempHP + ' starting HP of enemies: ' + remainingHPOfGenPop(enemies));
+  readlineSync.question('Press ENTER to beginn the fight');
 
   while (character.tempHP > 0 && remainingHPOfGenPop(enemies) > 0) {
     let initCounter = 30;
@@ -427,7 +451,7 @@ const combat = (character) => {
     for (initCounter; initCounter > -5; initCounter--) {
       // console.log(initCounter);
       if (characterInit === initCounter) {
-        playerUI(character, enemies);
+        playerUI(character, enemies, characterInit);
         enemies = clearDead(enemies);
       }
       for (let m = 0; m < enemies.length; m++) {
@@ -448,7 +472,6 @@ const combat = (character) => {
     turnCounter += 1;
   }
   endingSequence(character, difficulty);
-  readlineSync.question(' ');
 };
 
 // combat(blankCharacter);

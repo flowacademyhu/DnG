@@ -211,7 +211,7 @@ const levels = (charSheet) => {
   }
   if (charSheet.lvl >= 5 && charSheet.lvlBoolean.lvl5 === false) {
     charSheet.proficiency += 1;
-    charSheet.numberOfAttacks += 1;
+    charSheet.numOfAtks += 1;
     charSheet.lvlBoolean.lvl5 = true;
   }
   if (charSheet.lvl >= 6 && charSheet.lvlBoolean.lvl6 === false) {
@@ -231,7 +231,7 @@ const levels = (charSheet) => {
     charSheet.lvlBoolean.lvl9 = true;
   }
   if (charSheet.lvl >= 10 && charSheet.lvlBoolean.lvl10 === false) {
-    charSheet.numberOfAttacks += 1;
+    charSheet.numOfAtks += 1;
     charSheet.lvlBoolean.lvl10 = true;
   }
 };
