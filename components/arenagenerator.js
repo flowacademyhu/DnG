@@ -479,7 +479,7 @@ const combat = (character) => {
 // console.log(blankCharacter);
 
 /* //Test genPop:
-for (let i = 0; i < 500; i++) {
+for (let i = 0; i < 5000; i++) {
   for (let cr = 0.25; cr <= 7.5; cr += 0.25) {
     let x = genPop(cr)
     if (cr === 7.5) {

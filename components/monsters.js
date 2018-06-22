@@ -128,6 +128,20 @@ const beastList = [
     numOfAtks: 3
   },
   {
+    name: 'Werewolf Packmaster',
+    CR: 6,
+    AC: 14,
+    HP: () => {
+      return dice.roll(11, 10) + 25;
+    },
+    dmg: () => {
+      return dice.roll(1, 8) + 9;
+    },
+    atkMod: 8,
+    init: 8,
+    numOfAtks: 3
+  },
+  {
     name: 'Young Black Dragon',
     CR: 7,
     AC: 18,
