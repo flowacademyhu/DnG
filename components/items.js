@@ -62,11 +62,11 @@ const weaponList = [
   },
   {
     name: 'Battle Axe',
-    dmgDisplay: '2-13',
+    dmgDisplay: '1-12',
     dmg: () => {
-      return dice.roll(1, 12) + 1;
+      return dice.roll(1, 12);
     },
-    price: 80,
+    price: 300,
     type: 'onehanded'
   },
   {
