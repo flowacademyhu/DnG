@@ -27,7 +27,8 @@ const chooseDifficulty = () => {
   if (index >= 0) {
     return index + 1;
   } else {
-    console.log('Returning to menu.');
+    console.log('You have to choose a difficulty.');
+    return index;
   }
 };
 
@@ -438,6 +439,9 @@ const writeListOfEnemies = (enemies) => {
 const combat = (character) => {
   characterLoader(character);
   let difficulty = chooseDifficulty();
+  while (difficulty === -1) {
+    difficulty = chooseDifficulty();
+  }
   clear();
   let asumCR = sumCR(character.lvl, difficulty);
   let enemies = genPop(asumCR);
