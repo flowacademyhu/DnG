@@ -48,7 +48,10 @@ const genPop = (sumCR) => {
   for (let i = 0; i < 8; i++) {
     // pick a monster object from list, clone and add to pop
     monster = type.filter(monster => monster.CR <= remCR);
-    monster = monster.filter(monster => monster.CR >= remCR - 2.25);
+    monster = monster.filter(monster => monster.CR >= remCR - 1);
+    if (monster[0] === undefined) {
+      monster = type.filter(monster => monster.CR <= remCR);
+    }
     population[i] = clone(monster[dice.randomIndex(monster)]);
     // generate fix HP and Initiative
     population[i].HP = population[i].HP();
@@ -478,10 +481,10 @@ const combat = (character) => {
 // characterLoader(blankCharacter);
 // console.log(blankCharacter);
 
-/* //Test genPop:
-for (let i = 0; i < 5000; i++) {
+/* // Test genPop:
+for (let i = 0; i < 50000; i++) {
   for (let cr = 0.25; cr <= 7.5; cr += 0.25) {
-    let x = genPop(cr)
+    let x = genPop(cr);
     if (cr === 7.5) {
       console.log(i, cr);
       console.log(x[0].name);
