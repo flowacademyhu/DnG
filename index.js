@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const functions = require('./components/functions');
 const design = require('./components/design');
 const clear = require('console-clear');

@@ -1,10 +1,10 @@
 {
   "name": "@flowacademy/dng",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
-    "dn2": "./index.js"
+    "dng": "./index.js"
   },
   "scripts": {
     "start": "node index.js"
