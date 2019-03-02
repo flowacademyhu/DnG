@@ -1,22 +1,24 @@
 {
-  "name": "dng",
+  "name": "@flowacademy/dng",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "dn2": "./index.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Godfrid/DnG.git"
+    "url": "git+https://github.com/flowacademyhu/DnG.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Godfrid/DnG/issues"
+    "url": "https://github.com/Godfrid/flowacademyhu/issues"
   },
-  "homepage": "https://github.com/Godfrid/DnG#readme",
+  "homepage": "https://github.com/flowacademyhu/DnG#readme",
   "dependencies": {
     "axel": "0.0.3",
     "clone": "^2.1.1",
